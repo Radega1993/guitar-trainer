@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 400" fill="none">
+  <rect width="800" height="400" fill="#2a2522"/>
+  <text x="400" y="36" text-anchor="middle" fill="#f5f0e9" font-size="26" font-family="sans-serif" font-weight="bold">Pentagrama y clave de Sol</text>
+  <line x1="100" y1="160" x2="700" y2="160" stroke="#f5f0e9" stroke-width="2"/>
+  <line x1="100" y1="190" x2="700" y2="190" stroke="#f5f0e9" stroke-width="2"/>
+  <line x1="100" y1="220" x2="700" y2="220" stroke="#f5f0e9" stroke-width="2"/>
+  <line x1="100" y1="250" x2="700" y2="250" stroke="#f5f0e9" stroke-width="2"/>
+  <line x1="100" y1="280" x2="700" y2="280" stroke="#f5f0e9" stroke-width="2"/>
+  <text x="130" y="248" fill="#facc15" font-size="80" font-family="serif">4</text>
+  <ellipse cx="420" cy="220" rx="14" ry="10" fill="#f59e0b"/>
+  <line x1="434" y1="220" x2="434" y2="170" stroke="#f5f0e9" stroke-width="2"/>
+  <text x="400" y="340" text-anchor="middle" fill="#b8ada2" font-size="15">Cinco líneas. Más arriba = nota más aguda.</text>
+</svg>

@@ -3,13 +3,50 @@ import { ScrollView, StyleSheet, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import PrimaryButton from '../components/common/PrimaryButton';
-import { StudyBlock } from '../data/curriculum';
+import { StudyBlock, StudyLevel } from '../data/curriculum';
 import { resolveCurriculumSource } from '../data/curriculum/loader';
+import { StageExerciseType } from '../data/curriculum/types';
 import { RootStackParamList } from '../navigation/types';
 import { useProgress } from '../storage/ProgressContext';
 import { colors, radius, spacing } from '../theme';
 
 type Props = NativeStackScreenProps<RootStackParamList, 'StudyBlock'>;
+
+const TYPE_LABEL: Record<StageExerciseType, string> = {
+  theory: 'T',
+  quiz: 'Q',
+  recognition: 'R',
+  fretboard: 'M',
+  scrolling_reading: 'L',
+  speed: 'V',
+  mini_study: 'E',
+  exam: 'X',
+};
+
+function navigateToLevel(
+  navigation: Props['navigation'],
+  level: StudyLevel
+) {
+  const type = level.stageLevelType;
+  if (type === 'theory') {
+    navigation.navigate('TheoryLesson', { studyLevelId: level.id });
+    return;
+  }
+  if (type === 'quiz') {
+    navigation.navigate('Quiz', { studyLevelId: level.id });
+    return;
+  }
+  if (type === 'recognition') {
+    navigation.navigate('Recognition', { studyLevelId: level.id });
+    return;
+  }
+  navigation.navigate('Exercise', {
+    sessionMode: 'level',
+    sourceId: level.id,
+    studyLevelId: level.id,
+    exerciseConfigId: level.exerciseConfigs[0]?.id,
+  });
+}
 
 export default function StudyBlockScreen({ route, navigation }: Props) {
   const { isStudyLevelUnlocked, isStudyBlockUnlocked } = useProgress();
@@ -61,40 +98,26 @@ export default function StudyBlockScreen({ route, navigation }: Props) {
         </View>
 
         <View style={styles.card}>
-          <Text style={styles.section}>Incluye niveles</Text>
+          <Text style={styles.section}>Niveles</Text>
           {block.levels.map((level) => (
             <View key={level.id} style={styles.levelRow}>
               <View style={styles.blockInfo}>
-                <Text style={styles.item}>• {level.title}</Text>
+                <Text style={styles.item}>
+                  {level.stageLevelType ? TYPE_LABEL[level.stageLevelType] : '•'} {level.title}
+                </Text>
                 <Text style={styles.blockText}>{level.goal}</Text>
               </View>
               <PrimaryButton
                 label="Jugar"
                 variant="secondary"
                 disabled={!isStudyLevelUnlocked(level.id)}
-                onPress={() =>
-                  navigation.navigate('Exercise', {
-                    sessionMode: 'level',
-                    sourceId: level.levelRefIds[0],
-                    levelId: level.levelRefIds[0],
-                    studyLevelId: level.id,
-                  })
-                }
+                onPress={() => navigateToLevel(navigation, level)}
                 style={styles.blockButton}
               />
             </View>
           ))}
         </View>
 
-        <PrimaryButton
-          label="Iniciar bloque"
-          onPress={() =>
-            navigation.navigate('Exercise', {
-              sessionMode: 'block',
-              sourceId: block.id,
-            })
-          }
-        />
         {block.blockExam ? (
           <PrimaryButton
             label="Examen del bloque"

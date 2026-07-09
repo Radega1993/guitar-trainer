@@ -2,8 +2,10 @@ import { makeQuestion, makeRound, isCorrect } from '../exercise';
 import {
   calculateErrorRate,
   calculateStars,
+  calculateStarsWithThresholds,
   getPedagogicalMessages,
   isLevelPassed,
+  isLevelPassedWithRules,
   summarizeRound,
 } from '../scoring';
 import { LEVELS, getLevel } from '../../data/levels';
@@ -71,6 +73,25 @@ describe('scoring', () => {
     expect(calculateStars(0.2, 2000)).toBe(1);
     expect(calculateStars(0.2, 2100)).toBe(0);
     expect(calculateStars(0.21, 1500)).toBe(0);
+  });
+
+  it('awards stars by accuracy only for quizzes', () => {
+    const thresholds = [
+      { stars: 1 as const, accuracyMin: 0.8, maxAvgResponseMs: 2000 },
+      { stars: 2 as const, accuracyMin: 0.9, maxAvgResponseMs: 1500 },
+      { stars: 3 as const, accuracyMin: 1, maxAvgResponseMs: 1000 },
+    ];
+    expect(calculateStarsWithThresholds(1, 5000, thresholds, 'accuracy_only')).toBe(3);
+    expect(calculateStarsWithThresholds(0.95, 5000, thresholds, 'accuracy_only')).toBe(2);
+    expect(calculateStarsWithThresholds(0.85, 5000, thresholds, 'accuracy_only')).toBe(1);
+    expect(calculateStarsWithThresholds(0.7, 5000, thresholds, 'accuracy_only')).toBe(0);
+  });
+
+  it('gives 3 stars on perfect quiz regardless of time', () => {
+    const result = summarizeRound(6, 6, 16000, 2667, { mode: 'accuracy_only' });
+    expect(result.stars).toBe(3);
+    expect(result.passed).toBe(true);
+    expect(result.scoringMode).toBe('accuracy_only');
   });
 
   it('checks level pass gates', () => {

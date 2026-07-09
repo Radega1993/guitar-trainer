@@ -15,6 +15,9 @@ import InfinitePracticeScreen from './src/screens/InfinitePracticeScreen';
 import PracticeSetupScreen from './src/screens/PracticeSetupScreen';
 import PracticeSessionScreen from './src/screens/PracticeSessionScreen';
 import PracticeSummaryScreen from './src/screens/PracticeSummaryScreen';
+import TheoryLessonScreen from './src/screens/TheoryLessonScreen';
+import QuizScreen from './src/screens/QuizScreen';
+import RecognitionScreen from './src/screens/RecognitionScreen';
 import { AppProviders } from './src/app/providers/AppProviders';
 import { colors } from './src/theme';
 
@@ -97,6 +100,17 @@ function RootNavigator() {
           name="PracticeSummary"
           component={PracticeSummaryScreen}
           options={{ title: 'Resumen práctica', headerBackVisible: false }}
+        />
+        <Stack.Screen
+          name="TheoryLesson"
+          component={TheoryLessonScreen}
+          options={{ title: 'Teoría' }}
+        />
+        <Stack.Screen name="Quiz" component={QuizScreen} options={{ title: 'Quiz' }} />
+        <Stack.Screen
+          name="Recognition"
+          component={RecognitionScreen}
+          options={{ title: 'Reconocimiento' }}
         />
       </Stack.Navigator>
     </NavigationContainer>

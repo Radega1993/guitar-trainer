@@ -1,9 +1,12 @@
 import { Position } from '../../domain/fretboard';
+import { FeedbackSound } from './noteAudioCatalog';
 import {
-  FeedbackSound,
-  getFeedbackAudioRelativePath,
-  getPositionAudioRelativePath,
-} from './noteAudioCatalog';
+  getFeedbackAudioModule,
+  getNoteAudioModule,
+} from './noteAudioAssets';
+import { positionToAudioKey } from './noteAudioCatalog';
+
+type AudioSource = number | { uri: string };
 
 type AnyObject = Record<string, unknown>;
 
@@ -53,54 +56,70 @@ class ExpoNoteAudioPlayer implements NoteAudioPlayer {
   private activePlayer: RuntimeAudioPlayer | null = null;
   private preloadCache = new Set<string>();
 
-  private createPlayer(uri: string): RuntimeAudioPlayer | null {
+  private createPlayer(source: AudioSource): RuntimeAudioPlayer | null {
     const createAudioPlayer = this.expoAudio?.createAudioPlayer;
     if (!createAudioPlayer) {
       warnOnce('expo-audio createAudioPlayer unavailable');
       return null;
     }
     try {
-      return createAudioPlayer({ uri });
+      return createAudioPlayer(source as AnyObject);
     } catch (error) {
-      warnOnce(`failed to create player for ${uri}`, error);
+      warnOnce(`failed to create player`, error);
       return null;
     }
   }
 
-  private async playUri(uri: string): Promise<void> {
-    const player = this.createPlayer(uri);
+  private cacheKey(source: AudioSource): string {
+    return typeof source === 'number' ? `mod:${source}` : source.uri;
+  }
+
+  private async playSource(source: AudioSource): Promise<void> {
+    const player = this.createPlayer(source);
     if (!player) return;
     try {
       await this.stop();
       this.activePlayer = player;
       player.play();
     } catch (error) {
-      warnOnce(`failed to play ${uri}`, error);
+      warnOnce('failed to play audio', error);
     }
   }
 
   async preloadPositions(positions: Position[]): Promise<void> {
     for (const position of positions) {
-      const uri = getPositionAudioRelativePath(position);
-      if (this.preloadCache.has(uri)) continue;
-      this.preloadCache.add(uri);
-      const player = this.createPlayer(uri);
+      const key = positionToAudioKey(position);
+      const moduleId = getNoteAudioModule(key);
+      if (moduleId == null) {
+        warnOnce(`missing audio module for ${key}`);
+        continue;
+      }
+      const cacheKey = this.cacheKey(moduleId);
+      if (this.preloadCache.has(cacheKey)) continue;
+      this.preloadCache.add(cacheKey);
+      const player = this.createPlayer(moduleId);
       if (!player) continue;
       try {
         player.pause();
         player.remove();
       } catch (error) {
-        warnOnce(`failed to preload ${uri}`, error);
+        warnOnce(`failed to preload ${key}`, error);
       }
     }
   }
 
   async playPosition(position: Position): Promise<void> {
-    await this.playUri(getPositionAudioRelativePath(position));
+    const key = positionToAudioKey(position);
+    const moduleId = getNoteAudioModule(key);
+    if (moduleId == null) {
+      warnOnce(`missing audio module for ${key}`);
+      return;
+    }
+    await this.playSource(moduleId);
   }
 
   async playFeedback(kind: FeedbackSound): Promise<void> {
-    await this.playUri(getFeedbackAudioRelativePath(kind));
+    await this.playSource(getFeedbackAudioModule(kind));
   }
 
   async stop(): Promise<void> {

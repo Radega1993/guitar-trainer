@@ -1,0 +1,17 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 400" fill="none">
+  <rect width="800" height="400" fill="#2a2522"/>
+  <text x="400" y="36" text-anchor="middle" fill="#f5f0e9" font-size="26" font-family="sans-serif" font-weight="bold">Trastes y primera posición</text>
+  <rect x="120" y="100" width="560" height="160" fill="#6b4423" rx="6"/>
+  <line x1="180" y1="100" x2="180" y2="260" stroke="#e7e2d8" stroke-width="4"/>
+  <line x1="260" y1="100" x2="260" y2="260" stroke="#c4c0b8" stroke-width="2"/>
+  <line x1="340" y1="100" x2="340" y2="260" stroke="#c4c0b8" stroke-width="2"/>
+  <line x1="420" y1="100" x2="420" y2="260" stroke="#c4c0b8" stroke-width="2"/>
+  <line x1="500" y1="100" x2="500" y2="260" stroke="#c4c0b8" stroke-width="2"/>
+  <line x1="140" y1="150" x2="640" y2="150" stroke="#d6d0c4" stroke-width="2"/>
+  <circle cx="300" cy="150" r="16" fill="#f59e0b" opacity="0.9"/>
+  <text x="150" y="290" fill="#facc15" font-size="14">0 al aire</text>
+  <text x="248" y="290" fill="#b8ada2" font-size="14">1</text>
+  <text x="328" y="290" fill="#b8ada2" font-size="14">2</text>
+  <text x="408" y="290" fill="#b8ada2" font-size="14">3</text>
+  <text x="400" y="340" text-anchor="middle" fill="#b8ada2" font-size="15">Cada traste sube un semitono. En Etapa I usamos trastes 03.</text>
+</svg>

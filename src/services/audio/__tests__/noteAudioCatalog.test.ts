@@ -4,6 +4,7 @@ import {
   listPositionAudioKeys,
   positionToAudioKey,
 } from '../noteAudioCatalog';
+import { getNoteAudioModule } from '../noteAudioAssets';
 
 describe('noteAudioCatalog', () => {
   it('builds key from position', () => {
@@ -20,6 +21,11 @@ describe('noteAudioCatalog', () => {
     expect(keys).toHaveLength(18);
     expect(keys[0]).toBe('c1t0');
     expect(keys[keys.length - 1]).toBe('c6t2');
+  });
+
+  it('bundles note audio modules for known positions', () => {
+    expect(getNoteAudioModule('c1t0')).toBeDefined();
+    expect(getNoteAudioModule('c6t3')).toBeDefined();
   });
 });
 

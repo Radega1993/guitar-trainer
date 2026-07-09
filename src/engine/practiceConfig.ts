@@ -62,3 +62,70 @@ export function normalizePracticeConfig(
   };
 }
 
+export interface Stage1PracticePreset {
+  id: string;
+  label: string;
+  config: Partial<PracticeConfig>;
+}
+
+export const STAGE1_PRACTICE_PRESETS: Stage1PracticePreset[] = [
+  {
+    id: 's1-string1',
+    label: 'Primera cuerda',
+    config: { strings: [1], notePool: ['E4', 'F4', 'G4'], fretMin: 0, fretMax: 3 },
+  },
+  {
+    id: 's1-string2',
+    label: 'Segunda cuerda',
+    config: { strings: [2], notePool: ['B3', 'C4', 'D4'], fretMin: 0, fretMax: 3 },
+  },
+  {
+    id: 's1-strings123',
+    label: 'Tres primeras cuerdas',
+    config: {
+      strings: [1, 2, 3],
+      notePool: ['E4', 'F4', 'G4', 'B3', 'C4', 'D4', 'G3', 'A3'],
+      fretMin: 0,
+      fretMax: 3,
+    },
+  },
+  {
+    id: 's1-bass',
+    label: 'Bajos',
+    config: {
+      strings: [4, 5, 6],
+      notePool: ['D3', 'E3', 'F3', 'A2', 'B2', 'C3', 'E2', 'F2', 'G2'],
+      fretMin: 0,
+      fretMax: 3,
+    },
+  },
+  {
+    id: 's1-full',
+    label: 'Todas (1ª posición)',
+    config: {
+      strings: [1, 2, 3, 4, 5, 6],
+      notePool: [
+        'E4', 'F4', 'G4', 'B3', 'C4', 'D4', 'G3', 'A3', 'D3', 'E3', 'F3',
+        'A2', 'B2', 'C3', 'E2', 'F2', 'G2',
+      ],
+      fretMin: 0,
+      fretMax: 3,
+    },
+  },
+  {
+    id: 's1-failed',
+    label: 'Solo notas falladas',
+    config: { onlyFailedNotes: true, includeLearnedNotes: true },
+  },
+  {
+    id: 's1-low',
+    label: 'Cuerdas graves',
+    config: { strings: [4, 5, 6], fretMin: 0, fretMax: 3 },
+  },
+  {
+    id: 's1-high',
+    label: 'Cuerdas agudas',
+    config: { strings: [1, 2, 3], fretMin: 0, fretMax: 3 },
+  },
+];
+

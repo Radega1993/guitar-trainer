@@ -1,0 +1,18 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 400" fill="none">
+  <rect width="800" height="400" fill="#2a2522"/>
+  <text x="400" y="36" text-anchor="middle" fill="#f5f0e9" font-size="26" font-family="sans-serif" font-weight="bold">Las seis cuerdas</text>
+  <rect x="80" y="80" width="640" height="200" fill="#6b4423" rx="8"/>
+  <line x1="100" y1="110" x2="700" y2="110" stroke="#d6d0c4" stroke-width="2"/>
+  <line x1="100" y1="140" x2="700" y2="140" stroke="#d6d0c4" stroke-width="2.5"/>
+  <line x1="100" y1="170" x2="700" y2="170" stroke="#d6d0c4" stroke-width="3"/>
+  <line x1="100" y1="200" x2="700" y2="200" stroke="#d6d0c4" stroke-width="3.5"/>
+  <line x1="100" y1="230" x2="700" y2="230" stroke="#d6d0c4" stroke-width="4"/>
+  <line x1="100" y1="260" x2="700" y2="260" stroke="#d6d0c4" stroke-width="4.5"/>
+  <text x="60" y="115" fill="#facc15" font-size="16" font-weight="bold">1 Mi</text>
+  <text x="60" y="145" fill="#f5f0e9" font-size="15">2 Si</text>
+  <text x="60" y="175" fill="#f5f0e9" font-size="15">3 Sol</text>
+  <text x="60" y="205" fill="#f5f0e9" font-size="15">4 Re</text>
+  <text x="60" y="235" fill="#f5f0e9" font-size="15">5 La</text>
+  <text x="60" y="265" fill="#f5f0e9" font-size="15">6 Mi</text>
+  <text x="400" y="340" text-anchor="middle" fill="#b8ada2" font-size="15">La cuerda 1 es la más aguda (arriba). La 6 es la más grave.</text>
+</svg>

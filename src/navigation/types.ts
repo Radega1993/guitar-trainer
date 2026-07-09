@@ -12,7 +12,12 @@ export type RootStackParamList = {
     sessionMode?: 'level' | 'block' | 'infinite';
     sourceId?: string;
   };
-  Results: { levelId: string; result: RoundResult };
+  Results: {
+    levelId: string;
+    result: RoundResult;
+    studyLevelId?: string;
+    title?: string;
+  };
   Stats: undefined;
   Settings: undefined;
   StudyBlock: { blockId: string };
@@ -20,4 +25,7 @@ export type RootStackParamList = {
   PracticeSetup: undefined;
   PracticeSession: { config: PracticeConfig };
   PracticeSummary: { summary: PracticeSummary };
+  TheoryLesson: { studyLevelId: string };
+  Quiz: { studyLevelId: string };
+  Recognition: { studyLevelId: string };
 };

@@ -8,7 +8,9 @@ import React, {
 } from 'react';
 import { RoundResult } from '../engine/scoring';
 import { getLevelByOrder, getLevel } from '../data/levels';
-import { getStudyBlockById, getStudyLevelById } from '../data/curriculum';
+import { getStudyLevelById } from '../data/curriculum';
+import { isStage1BlockUnlocked } from '../data/curriculum/stage1';
+import { stage1 } from '../data/curriculum/stage1/stage1';
 import { loadProgress, saveProgress, clearProgress } from './progressStore';
 import { emptyProgress, LevelProgress, ProgressState } from './types';
 import {
@@ -134,12 +136,9 @@ export function ProgressProvider({ children }: { children: React.ReactNode }) {
 
   const isStudyBlockUnlocked = useCallback(
     (blockId: string) => {
-      const block = getStudyBlockById(blockId);
-      if (!block) return false;
-      if (block.prerequisiteBlockIds.length === 0) return true;
-      return block.prerequisiteBlockIds.every((reqId) => state.blocks[reqId]?.completed === true);
+      return isStage1BlockUnlocked(blockId, state);
     },
-    [state.blocks]
+    [state]
   );
 
   const isStudyLevelUnlocked = useCallback(
@@ -156,19 +155,49 @@ export function ProgressProvider({ children }: { children: React.ReactNode }) {
 
   const recordStudyLevelResult = useCallback((studyLevelId: string, result: RoundResult) => {
     setState((prev) => {
+      const studyLevel = getStudyLevelById(studyLevelId);
+      const isTheory = studyLevel?.stageLevelType === 'theory';
+      const isQuiz = studyLevel?.stageLevelType === 'quiz';
+      const stars = isTheory ? 3 : isQuiz ? Math.max(result.stars, 1) : result.stars;
+      const passed = isTheory || isQuiz ? true : result.passed;
+
       const existing = prev.studyLevels[studyLevelId];
       const nextLevel: LevelProgress = {
-        bestStars: Math.max(existing?.bestStars ?? 0, result.stars),
+        bestStars: Math.max(existing?.bestStars ?? 0, stars),
         bestAccuracy: Math.max(existing?.bestAccuracy ?? 0, result.accuracy),
         rounds: (existing?.rounds ?? 0) + 1,
-        completed: (existing?.completed ?? false) || result.stars >= 1,
+        completed: (existing?.completed ?? false) || stars >= 1 || passed,
       };
+
+      let nextBlocks = { ...prev.blocks };
+      if (studyLevel?.blockId === 'stage1-block0') {
+        const block0 = stage1.blocks.find((b) => b.id === 'stage1-block0');
+        const allDone =
+          block0?.levels.every((lvl) => {
+            const prog =
+              lvl.id === studyLevelId ? nextLevel : prev.studyLevels[lvl.id];
+            return (prog?.completed ?? false) || (prog?.bestStars ?? 0) >= 1;
+          }) ?? false;
+        if (allDone) {
+          nextBlocks = {
+            ...nextBlocks,
+            'stage1-block0': {
+              bestStars: Math.max(nextBlocks['stage1-block0']?.bestStars ?? 0, 1),
+              attempts: (nextBlocks['stage1-block0']?.attempts ?? 0) + 1,
+              completed: true,
+              examPassed: false,
+            },
+          };
+        }
+      }
+
       const next = {
         ...prev,
         studyLevels: {
           ...prev.studyLevels,
           [studyLevelId]: nextLevel,
         },
+        blocks: nextBlocks,
       };
       void saveProgress(next);
       return next;

@@ -1,3 +1,18 @@
+import { StarCriteria } from '../data/curriculum/types';
+
+export type ScoringMode = 'accuracy_and_speed' | 'accuracy_only';
+
+export interface ScoringPassRules {
+  maxErrorRate: number;
+  maxAvgResponseMs: number;
+}
+
+export interface ScoringOptions {
+  mode?: ScoringMode;
+  starThresholds?: StarCriteria[];
+  passRules?: ScoringPassRules;
+}
+
 export interface RoundResult {
   correct: number;
   total: number;
@@ -8,6 +23,7 @@ export interface RoundResult {
   avgResponseMs: number;
   passed: boolean;
   feedbackMessages: string[];
+  scoringMode: ScoringMode;
 }
 
 /** Error percentage in the [0, 1] range. */
@@ -17,6 +33,17 @@ export function calculateErrorRate(correct: number, total: number): number {
   return errors / total;
 }
 
+const DEFAULT_THRESHOLDS: StarCriteria[] = [
+  { stars: 1, accuracyMin: 0.8, maxAvgResponseMs: 2000 },
+  { stars: 2, accuracyMin: 0.9, maxAvgResponseMs: 1500 },
+  { stars: 3, accuracyMin: 1, maxAvgResponseMs: 1000 },
+];
+
+const DEFAULT_PASS: ScoringPassRules = {
+  maxErrorRate: 0.2,
+  maxAvgResponseMs: 2000,
+};
+
 /** Stars based on strict pedagogical gates: error rate + response time. */
 export function calculateStars(errorRate: number, avgResponseMs: number): number {
   if (errorRate <= 0 && avgResponseMs < 1000) return 3;
@@ -25,11 +52,43 @@ export function calculateStars(errorRate: number, avgResponseMs: number): number
   return 0;
 }
 
+export function calculateStarsWithThresholds(
+  accuracy: number,
+  avgResponseMs: number,
+  thresholds: StarCriteria[],
+  mode: ScoringMode
+): number {
+  const sorted = [...thresholds].sort((a, b) => b.stars - a.stars);
+  for (const threshold of sorted) {
+    if (accuracy < threshold.accuracyMin) continue;
+    if (mode === 'accuracy_only' || avgResponseMs <= threshold.maxAvgResponseMs) {
+      return threshold.stars;
+    }
+  }
+  return 0;
+}
+
 export function isLevelPassed(errorRate: number, avgResponseMs: number): boolean {
   return errorRate <= 0.2 && avgResponseMs <= 2000;
 }
 
-export function getPedagogicalMessages(errorRate: number, avgResponseMs: number): string[] {
+export function isLevelPassedWithRules(
+  accuracy: number,
+  avgResponseMs: number,
+  passRules: ScoringPassRules,
+  mode: ScoringMode
+): boolean {
+  const minAccuracy = 1 - passRules.maxErrorRate;
+  if (accuracy < minAccuracy) return false;
+  if (mode === 'accuracy_only') return true;
+  return avgResponseMs <= passRules.maxAvgResponseMs;
+}
+
+export function getPedagogicalMessages(
+  errorRate: number,
+  avgResponseMs: number,
+  mode: ScoringMode = 'accuracy_and_speed'
+): string[] {
   const messages: string[] = [];
 
   if (errorRate > 0.2) {
@@ -38,7 +97,7 @@ export function getPedagogicalMessages(errorRate: number, avgResponseMs: number)
     );
   }
 
-  if (avgResponseMs > 2000) {
+  if (mode === 'accuracy_and_speed' && avgResponseMs > 2000) {
     messages.push(
       `Tu media de respuesta es ${(avgResponseMs / 1000).toFixed(
         1
@@ -57,12 +116,22 @@ export function summarizeRound(
   correct: number,
   total: number,
   timeMs: number,
-  avgResponseMs: number
+  avgResponseMs: number,
+  options: ScoringOptions = {}
 ): RoundResult {
+  const mode = options.mode ?? 'accuracy_and_speed';
+  const thresholds = options.starThresholds ?? DEFAULT_THRESHOLDS;
+  const passRules = options.passRules ?? DEFAULT_PASS;
   const accuracy = total > 0 ? correct / total : 0;
   const errorRate = calculateErrorRate(correct, total);
-  const stars = calculateStars(errorRate, avgResponseMs);
-  const passed = isLevelPassed(errorRate, avgResponseMs);
+
+  const stars =
+    mode === 'accuracy_only' || options.starThresholds
+      ? calculateStarsWithThresholds(accuracy, avgResponseMs, thresholds, mode)
+      : calculateStars(errorRate, avgResponseMs);
+
+  const passed = isLevelPassedWithRules(accuracy, avgResponseMs, passRules, mode);
+
   return {
     correct,
     total,
@@ -72,6 +141,7 @@ export function summarizeRound(
     timeMs,
     avgResponseMs,
     passed,
-    feedbackMessages: passed ? [] : getPedagogicalMessages(errorRate, avgResponseMs),
+    scoringMode: mode,
+    feedbackMessages: passed ? [] : getPedagogicalMessages(errorRate, avgResponseMs, mode),
   };
 }

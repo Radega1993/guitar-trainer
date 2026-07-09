@@ -3,7 +3,97 @@ export type ExerciseType =
   | 'position-matching'
   | 'reading-speed'
   | 'mini-study'
+  | 'exam'
+  | 'theory'
+  | 'quiz';
+
+export type StageExerciseType =
+  | 'theory'
+  | 'quiz'
+  | 'recognition'
+  | 'fretboard'
+  | 'scrolling_reading'
+  | 'speed'
+  | 'mini_study'
   | 'exam';
+
+export interface TheoryPage {
+  title: string;
+  body: string;
+  image?: {
+    asset: string;
+    caption?: string;
+    attribution: string;
+    sourceUrl?: string;
+  };
+}
+
+export interface TheoryContent {
+  id: string;
+  title: string;
+  pages: TheoryPage[];
+}
+
+export interface QuizOption {
+  id: string;
+  label: string;
+}
+
+export interface QuizQuestion {
+  id: string;
+  prompt: string;
+  options: QuizOption[];
+  correctOptionId: string;
+}
+
+export interface StageLevelConfig {
+  notes: string[];
+  strings: number[];
+  frets: number[];
+  numberOfQuestions: number;
+  animation: boolean;
+  sound: boolean;
+  allowOnlyExactString: boolean;
+  timeLimitPerQuestion: number | null;
+  passRules: {
+    maxErrorRate: number;
+    maxAverageResponseTime: number;
+  };
+  animationSpeed?: 'slow' | 'normal' | 'fast';
+  preferStepwiseMotion?: boolean;
+  avoidRepeats?: boolean;
+  difficulty?: 'easy' | 'medium' | 'hard';
+}
+
+export interface StageLevel {
+  id: string;
+  title: string;
+  type: StageExerciseType;
+  objective: string;
+  theoryId?: string;
+  config: StageLevelConfig;
+  unlockAfterLevelId?: string;
+  quizQuestions?: QuizQuestion[];
+}
+
+export interface StageBlock {
+  id: string;
+  title: string;
+  description: string;
+  order: number;
+  theory: TheoryContent[];
+  levels: StageLevel[];
+  examLevelId?: string;
+  requiresExamToUnlockNext?: boolean;
+}
+
+export interface Stage {
+  id: string;
+  title: string;
+  description: string;
+  order: number;
+  blocks: StageBlock[];
+}
 
 export interface PassCriteria {
   accuracyMin: number;
@@ -73,6 +163,11 @@ export interface StudyLevel {
   };
   miniStudies: MiniStudy[];
   examRef?: string;
+  /** Stage 1 metadata when mapped from Stage curriculum. */
+  stageLevelType?: StageExerciseType;
+  stageConfig?: StageLevelConfig;
+  stageTheoryId?: string;
+  quizQuestions?: QuizQuestion[];
 }
 
 export interface StudyBlock {

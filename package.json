@@ -65,6 +65,9 @@
           ]
         }
       ]
+    },
+    "moduleNameMapper": {
+      "\\.mp3$": "<rootDir>/src/services/audio/__mocks__/audioFileMock.ts"
     }
   },
   "private": true

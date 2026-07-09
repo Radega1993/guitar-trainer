@@ -6,21 +6,20 @@ import {
 
 describe('sessionService curriculum', () => {
   it('creates a study level session', () => {
-    const session = createStudyLevelSession('b1-l1');
+    const session = createStudyLevelSession('stage1-block1-level1');
     expect(session.questions.length).toBeGreaterThan(0);
-    expect(session.metadata?.studyLevelId).toBe('b1-l1');
+    expect(session.metadata?.studyLevelId).toBe('stage1-block1-level1');
   });
 
   it('creates a mini study session', () => {
-    const session = createMiniStudySession('ms-b1-l1');
+    const session = createMiniStudySession('mini:stage1-block1-level11');
     expect(session.questions.length).toBeGreaterThan(0);
     expect(session.metadata?.isMiniStudy).toBe(true);
   });
 
   it('creates a block exam session', () => {
-    const session = createBlockExamSession('block-1-treble-foundations');
+    const session = createBlockExamSession('stage1-block1');
     expect(session.questions.length).toBeGreaterThan(0);
-    expect(session.metadata?.examId).toBe('exam-b1');
+    expect(session.metadata?.examId).toBe('exam-stage1-block1');
   });
 });
-

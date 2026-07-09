@@ -1,0 +1,15 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 500" fill="none">
+  <rect width="800" height="500" fill="#2a2522"/>
+  <text x="400" y="40" text-anchor="middle" fill="#f5f0e9" font-size="28" font-family="sans-serif" font-weight="bold">Partes de la guitarra clásica</text>
+  <ellipse cx="220" cy="280" rx="140" ry="170" fill="#6b4423" stroke="#c4c0b8" stroke-width="3"/>
+  <circle cx="220" cy="280" r="55" fill="#1c1917" stroke="#c4c0b8" stroke-width="2"/>
+  <text x="220" y="285" text-anchor="middle" fill="#f5f0e9" font-size="14">Boca</text>
+  <rect x="350" y="230" width="380" height="18" fill="#8b5a2b" rx="4"/>
+  <text x="540" y="220" text-anchor="middle" fill="#facc15" font-size="16">Mástil / Diapasón</text>
+  <rect x="350" y="248" width="380" height="8" fill="#57534e"/>
+  <text x="540" y="270" text-anchor="middle" fill="#b8ada2" font-size="13">Trastes</text>
+  <rect x="720" y="200" width="50" height="80" fill="#4b443f" rx="6"/>
+  <text x="745" y="195" text-anchor="middle" fill="#f5f0e9" font-size="13">Clavijero</text>
+  <text x="220" y="470" text-anchor="middle" fill="#b8ada2" font-size="14">Caja</text>
+  <text x="540" y="470" text-anchor="middle" fill="#b8ada2" font-size="14">Cuerdas (6)</text>
+</svg>

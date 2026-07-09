@@ -1,12 +1,13 @@
-import React from 'react';
-import { StyleSheet, Text, View } from 'react-native';
+import React, { useMemo } from 'react';
+import { StyleSheet, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
-import StarRating from '../components/common/StarRating';
-import PrimaryButton from '../components/common/PrimaryButton';
-import { getLevel, getLevelByOrder } from '../data/levels';
+import LevelCompleteCelebration from '../components/celebration/LevelCompleteCelebration';
+import { getLevel } from '../data/levels';
+import { getStudyLevelById } from '../data/curriculum';
+import { resolveNextLessonAfterCompleting } from '../data/curriculum/pathNavigation';
 import { useProgress } from '../storage/ProgressContext';
-import { colors, radius, spacing } from '../theme';
+import { colors } from '../theme';
 import { RootStackParamList } from '../navigation/types';
 
 type Props = NativeStackScreenProps<RootStackParamList, 'Results'>;
@@ -19,80 +20,77 @@ function formatTime(ms: number): string {
 }
 
 export default function ResultsScreen({ route, navigation }: Props) {
-  const { levelId, result } = route.params;
-  const level = getLevel(levelId)!;
-  const { isLevelUnlocked } = useProgress();
+  const { levelId, result, studyLevelId, title } = route.params;
+  const level = getLevel(levelId);
+  const studyLevel = studyLevelId ? getStudyLevelById(studyLevelId) : undefined;
+  const { state } = useProgress();
 
-  const nextLevel = getLevelByOrder(level.order + 1);
-  const nextUnlocked = nextLevel ? isLevelUnlocked(nextLevel.id) : false;
-  const canAdvance = Boolean(nextLevel && nextUnlocked && result.passed);
+  const displayName = title ?? studyLevel?.title ?? level?.name ?? 'Ejercicio';
+
+  const nextLesson = useMemo(
+    () => (studyLevelId ? resolveNextLessonAfterCompleting(studyLevelId, state) : null),
+    [studyLevelId, state]
+  );
 
   const headline =
     result.stars === 3
       ? '¡Excelente!'
       : result.passed
       ? '¡Nivel superado!'
-      : 'Nivel no superado';
+      : 'Casi lo tienes';
+
+  const goToNext = () => {
+    if (!result.passed) {
+      if (studyLevelId && studyLevel?.stageLevelType === 'theory') {
+        navigation.replace('TheoryLesson', { studyLevelId });
+      } else if (studyLevelId && studyLevel?.stageLevelType === 'quiz') {
+        navigation.replace('Quiz', { studyLevelId });
+      } else if (studyLevelId && studyLevel?.stageLevelType === 'recognition') {
+        navigation.replace('Recognition', { studyLevelId });
+      } else if (studyLevelId) {
+        navigation.replace('Exercise', {
+          sessionMode: 'level',
+          studyLevelId,
+          sourceId: studyLevelId,
+        });
+      } else if (level) {
+        navigation.replace('Exercise', { levelId: level.id });
+      }
+      return;
+    }
+
+    if (nextLesson) {
+      navigation.replace(nextLesson.screen, nextLesson.params);
+    } else {
+      navigation.navigate('Home');
+    }
+  };
 
   return (
     <SafeAreaView style={styles.safe} edges={['bottom']}>
-      <View style={styles.content}>
-        <View style={styles.top}>
-          <Text style={styles.headline}>{headline}</Text>
-          <Text style={styles.levelName}>{level.name}</Text>
-          <View style={styles.stars}>
-            <StarRating value={result.stars} size={44} />
-          </View>
-        </View>
-
-        <View style={styles.statsRow}>
-          <Stat label="Precisión" value={`${Math.round(result.accuracy * 100)}%`} />
-          <Stat label="Error" value={`${Math.round(result.errorRate * 100)}%`} />
-          <Stat label="Media resp." value={`${(result.avgResponseMs / 1000).toFixed(1)}s`} />
-          <Stat label="Aciertos" value={`${result.correct}/${result.total}`} />
-          <Stat label="Ronda" value={formatTime(result.timeMs)} />
-        </View>
-
-        {!result.passed && (
-          <View style={styles.feedbackCard}>
-            <Text style={styles.feedbackTitle}>Qué mejorar para superar el nivel</Text>
-            {result.feedbackMessages.map((msg, idx) => (
-              <Text key={idx} style={styles.feedbackItem}>
-                • {msg}
-              </Text>
-            ))}
-          </View>
-        )}
-
-        <View style={styles.actions}>
-          {canAdvance && (
-            <PrimaryButton
-              label="Siguiente nivel"
-              onPress={() => navigation.replace('Exercise', { levelId: nextLevel!.id })}
-            />
-          )}
-          <PrimaryButton
-            label="Repetir nivel"
-            variant={nextLevel && nextUnlocked ? 'secondary' : 'primary'}
-            onPress={() => navigation.replace('Exercise', { levelId: level.id })}
-          />
-          <PrimaryButton
-            label="Volver a niveles"
-            variant="secondary"
-            onPress={() => navigation.navigate('LevelSelect')}
-          />
-        </View>
+      <View style={styles.center}>
+        <LevelCompleteCelebration
+          visible
+          embedded
+          title={headline}
+          levelName={displayName}
+          stars={result.stars}
+          passed={result.passed}
+          nextLessonTitle={result.passed ? nextLesson?.levelTitle : undefined}
+          onContinue={goToNext}
+          onGoHome={() => navigation.navigate('Home')}
+          onPractice={result.passed ? () => navigation.navigate('PracticeSetup') : undefined}
+          stats={[
+            { label: 'Precisión', value: `${Math.round(result.accuracy * 100)}%` },
+            { label: 'Aciertos', value: `${result.correct}/${result.total}` },
+            ...(result.scoringMode === 'accuracy_and_speed'
+              ? [{ label: 'Tiempo', value: formatTime(result.timeMs) }]
+              : []),
+          ]}
+          feedback={!result.passed ? result.feedbackMessages.slice(0, 2) : undefined}
+        />
       </View>
     </SafeAreaView>
-  );
-}
-
-function Stat({ label, value }: { label: string; value: string }) {
-  return (
-    <View style={styles.stat}>
-      <Text style={styles.statValue}>{value}</Text>
-      <Text style={styles.statLabel}>{label}</Text>
-    </View>
   );
 }
 
@@ -101,73 +99,8 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: colors.background,
   },
-  content: {
+  center: {
     flex: 1,
-    padding: spacing.lg,
-    justifyContent: 'space-between',
-  },
-  top: {
-    alignItems: 'center',
-    marginTop: spacing.xl,
-    gap: spacing.sm,
-  },
-  headline: {
-    color: colors.text,
-    fontSize: 32,
-    fontWeight: '800',
-  },
-  levelName: {
-    color: colors.textMuted,
-    fontSize: 16,
-  },
-  stars: {
-    marginTop: spacing.md,
-  },
-  statsRow: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-    justifyContent: 'space-between',
-    gap: spacing.sm,
-  },
-  stat: {
-    width: '48%',
-    flexGrow: 1,
-    backgroundColor: colors.surface,
-    borderRadius: radius.md,
-    paddingVertical: spacing.lg,
-    alignItems: 'center',
-    borderWidth: 1,
-    borderColor: colors.border,
-  },
-  statValue: {
-    color: colors.text,
-    fontSize: 20,
-    fontWeight: '800',
-  },
-  statLabel: {
-    color: colors.textMuted,
-    fontSize: 13,
-    marginTop: 4,
-  },
-  feedbackCard: {
-    borderWidth: 1,
-    borderColor: colors.border,
-    borderRadius: radius.md,
-    backgroundColor: colors.surface,
-    padding: spacing.md,
-    gap: spacing.xs,
-  },
-  feedbackTitle: {
-    color: colors.text,
-    fontSize: 16,
-    fontWeight: '700',
-  },
-  feedbackItem: {
-    color: colors.textMuted,
-    fontSize: 14,
-    lineHeight: 20,
-  },
-  actions: {
-    gap: spacing.sm,
+    justifyContent: 'center',
   },
 });

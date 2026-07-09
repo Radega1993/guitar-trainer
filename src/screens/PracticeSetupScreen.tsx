@@ -7,8 +7,13 @@ import FretRangeSelector from '../components/practice/FretRangeSelector';
 import NoteSelector from '../components/practice/NoteSelector';
 import PracticeFilterSection from '../components/practice/PracticeFilterSection';
 import StringSelector from '../components/practice/StringSelector';
-import { INITIAL_STUDY_BLOCKS } from '../data/curriculum';
-import { defaultPracticeConfig, normalizePracticeConfig, PracticeConfig } from '../engine/practiceConfig';
+import { STAGE1_BLOCKS } from '../data/curriculum';
+import {
+  defaultPracticeConfig,
+  normalizePracticeConfig,
+  PracticeConfig,
+  STAGE1_PRACTICE_PRESETS,
+} from '../engine/practiceConfig';
 import { RootStackParamList } from '../navigation/types';
 import { useSettingsStore } from '../settings/store';
 import { colors, spacing } from '../theme';
@@ -24,7 +29,13 @@ export default function PracticeSetupScreen({ navigation }: Props) {
     soundEnabled,
   });
 
-  const levels = useMemo(() => INITIAL_STUDY_BLOCKS.flatMap((b) => b.levels), []);
+  const levels = useMemo(() => STAGE1_BLOCKS.flatMap((b) => b.levels), []);
+
+  const applyPreset = (presetId: string) => {
+    const preset = STAGE1_PRACTICE_PRESETS.find((p) => p.id === presetId);
+    if (!preset) return;
+    setConfig((prev) => normalizePracticeConfig({ ...prev, ...preset.config }));
+  };
 
   const toggleBlock = (blockId: string) =>
     setConfig((prev) => ({
@@ -45,8 +56,22 @@ export default function PracticeSetupScreen({ navigation }: Props) {
   return (
     <SafeAreaView style={styles.safe} edges={['bottom']}>
       <ScrollView contentContainerStyle={styles.content}>
+        <PracticeFilterSection title="Presets Etapa 1">
+          <View style={styles.presetRow}>
+            {STAGE1_PRACTICE_PRESETS.map((preset) => (
+              <PrimaryButton
+                key={preset.id}
+                label={preset.label}
+                variant="secondary"
+                onPress={() => applyPreset(preset.id)}
+                style={styles.presetBtn}
+              />
+            ))}
+          </View>
+        </PracticeFilterSection>
+
         <PracticeFilterSection title="Bloques">
-          {INITIAL_STUDY_BLOCKS.map((b) => (
+          {STAGE1_BLOCKS.map((b) => (
             <PrimaryButton
               key={b.id}
               label={b.title}
@@ -145,7 +170,9 @@ function ToggleRow({
 const styles = StyleSheet.create({
   safe: { flex: 1, backgroundColor: colors.background },
   content: { padding: spacing.lg, gap: spacing.md },
-  row: { flexDirection: 'row', gap: spacing.sm },
+  row: { flexDirection: 'row', gap: spacing.sm, flexWrap: 'wrap' },
+  presetRow: { flexDirection: 'row', flexWrap: 'wrap', gap: spacing.sm },
+  presetBtn: { flexGrow: 1, minWidth: '45%' },
   flex: { flex: 1 },
   toggleRow: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' },
   toggleLabel: { color: colors.text, fontSize: 14 },

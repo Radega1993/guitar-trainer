@@ -1,5 +1,5 @@
 import { featureFlags } from '../../app/config/featureFlags';
-import { INITIAL_STUDY_BLOCKS } from './blocks.initial';
+import { STAGE1_BLOCKS } from './stage1';
 import { StudyBlock } from './types';
 
 function isObject(v: unknown): v is Record<string, unknown> {
@@ -18,7 +18,7 @@ function validateStudyBlock(raw: unknown): raw is StudyBlock {
 }
 
 export function loadCurriculumFromJs(): StudyBlock[] {
-  return INITIAL_STUDY_BLOCKS;
+  return STAGE1_BLOCKS;
 }
 
 export function loadCurriculumFromJson(raw: unknown): StudyBlock[] {

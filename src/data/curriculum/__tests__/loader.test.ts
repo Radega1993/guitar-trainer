@@ -3,7 +3,7 @@ import { loadCurriculumFromJs, loadCurriculumFromJson } from '../loader';
 describe('curriculum loader', () => {
   it('loads js curriculum blocks', () => {
     const blocks = loadCurriculumFromJs();
-    expect(blocks.length).toBeGreaterThanOrEqual(3);
+    expect(blocks.length).toBe(10);
   });
 
   it('validates json curriculum shape', () => {

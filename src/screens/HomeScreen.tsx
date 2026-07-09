@@ -1,99 +1,87 @@
-import React, { useEffect, useState } from 'react';
-import { ScrollView, StyleSheet, Text, View } from 'react-native';
+import React, { useCallback, useMemo, useState } from 'react';
+import { ScrollView, StyleSheet, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import { useFocusEffect } from '@react-navigation/native';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
-import PrimaryButton from '../components/common/PrimaryButton';
-import { StudyBlock } from '../data/curriculum';
-import { resolveCurriculumSource } from '../data/curriculum/loader';
+import LearningPathMap from '../components/path/LearningPathMap';
+import ModuleCompleteToast from '../components/path/ModuleCompleteToast';
+import PathHeader from '../components/path/PathHeader';
+import {
+  buildFutureStagePreviews,
+  buildLearningPathSections,
+  getActiveBlockIndex,
+  PathLessonNode,
+} from '../data/curriculum/learningPath';
+import { resolveLessonForLevel } from '../data/curriculum/pathNavigation';
+import { getStage1Progress } from '../data/curriculum/roadmapProgress';
 import { useProgress } from '../storage/ProgressContext';
-import { colors, radius, spacing } from '../theme';
+import { colors, spacing } from '../theme';
 import { RootStackParamList } from '../navigation/types';
 
 type Props = NativeStackScreenProps<RootStackParamList, 'Home'>;
 
 export default function HomeScreen({ navigation }: Props) {
-  const { isStudyBlockUnlocked } = useProgress();
-  const [blocks, setBlocks] = useState<StudyBlock[]>([]);
+  const { isStudyBlockUnlocked, state } = useProgress();
+  const initializedRef = React.useRef(false);
+  const prevCompletedRef = React.useRef(0);
+  const [toast, setToast] = useState({ visible: false, title: '' });
+  const [blockPageIndex, setBlockPageIndex] = useState(0);
 
-  useEffect(() => {
-    let mounted = true;
-    void resolveCurriculumSource().then((data) => {
-      if (mounted) setBlocks(data);
-    });
-    return () => {
-      mounted = false;
-    };
-  }, []);
+  const pathSections = useMemo(
+    () => buildLearningPathSections(state, isStudyBlockUnlocked),
+    [state, isStudyBlockUnlocked]
+  );
+  const futureStages = useMemo(() => buildFutureStagePreviews(state), [state]);
+
+  const handleLessonPress = useCallback(
+    (lesson: PathLessonNode) => {
+      if (lesson.state === 'locked') return;
+      const dest = resolveLessonForLevel(lesson.studyLevelId, state);
+      if (dest) navigation.navigate(dest.screen, dest.params);
+    },
+    [navigation, state]
+  );
+
+  useFocusEffect(
+    useCallback(() => {
+      const progress = getStage1Progress(state);
+      const completedNewBlock =
+        initializedRef.current && progress.completedBlocks > prevCompletedRef.current;
+
+      if (completedNewBlock) {
+        const lastComplete = [...pathSections].reverse().find((s) => s.blockComplete);
+        setToast({ visible: true, title: lastComplete?.moduleTitle ?? 'Módulo' });
+        setBlockPageIndex(getActiveBlockIndex(pathSections, state, isStudyBlockUnlocked));
+      } else if (!initializedRef.current) {
+        setBlockPageIndex(getActiveBlockIndex(pathSections, state, isStudyBlockUnlocked));
+      }
+
+      initializedRef.current = true;
+      prevCompletedRef.current = progress.completedBlocks;
+    }, [pathSections, state, isStudyBlockUnlocked])
+  );
 
   return (
     <SafeAreaView style={styles.safe} edges={['top', 'bottom']}>
+      <ModuleCompleteToast
+        moduleTitle={toast.title}
+        visible={toast.visible}
+        onDismiss={() => setToast((t) => ({ ...t, visible: false }))}
+      />
       <ScrollView contentContainerStyle={styles.content}>
-        <View style={styles.hero}>
-          <Text style={styles.kicker}>Guitarra clásica</Text>
-          <Text style={styles.title}>Guitar Trainer</Text>
-          <Text style={styles.subtitle}>
-            Aprende a leer notas en el pentagrama y a encontrarlas en el mástil.
-          </Text>
-        </View>
+        <PathHeader
+          onPractice={() => navigation.navigate('PracticeSetup')}
+          onStats={() => navigation.navigate('Stats')}
+          onSettings={() => navigation.navigate('Settings')}
+        />
 
-        <View style={styles.actions}>
-          <PrimaryButton label="Jugar" onPress={() => navigation.navigate('LevelSelect')} />
-          <PrimaryButton
-            label="Práctica infinita"
-            variant="secondary"
-            onPress={() => navigation.navigate('PracticeSetup')}
-          />
-          <PrimaryButton
-            label="Estadísticas"
-            variant="secondary"
-            onPress={() => navigation.navigate('Stats')}
-          />
-          <PrimaryButton
-            label="Ajustes"
-            variant="secondary"
-            onPress={() => navigation.navigate('Settings')}
-          />
-        </View>
-
-        <View style={styles.card}>
-          <Text style={styles.cardTitle}>Cómo funciona</Text>
-          <Text style={styles.cardText}>
-            En cada ejercicio verás una nota en clave de sol. Tu tarea es tocarla en la
-            cuerda indicada del mástil. Recibirás corrección inmediata y ganarás estrellas
-            según tu precisión.
-          </Text>
-        </View>
-
-        <View style={styles.card}>
-          <Text style={styles.cardTitle}>Bloques de estudio</Text>
-          {blocks.map((block) => (
-            <View key={block.id} style={styles.blockRow}>
-              <View style={styles.blockInfo}>
-                <Text style={styles.blockTitle}>{block.title}</Text>
-                <Text style={styles.blockText}>{block.description}</Text>
-                <Text style={styles.blockStatus}>
-                  {isStudyBlockUnlocked(block.id) ? 'Desbloqueado' : 'Bloqueado'}
-                </Text>
-              </View>
-              <PrimaryButton
-                label="Abrir"
-                variant="secondary"
-                disabled={!isStudyBlockUnlocked(block.id)}
-                onPress={() => navigation.navigate('StudyBlock', { blockId: block.id })}
-                style={styles.blockButton}
-              />
-            </View>
-          ))}
-        </View>
-
-        <View style={[styles.card, styles.noteCard]}>
-          <Text style={styles.cardTitle}>Nota pedagógica</Text>
-          <Text style={styles.cardText}>
-            La guitarra es un instrumento transpositor: se escribe en clave de sol pero
-            suena una octava más grave de lo que se lee. La secuencia de niveles se inspira
-            en la progresión de los métodos clásicos de Sagreras, Sor y Aguado.
-          </Text>
-        </View>
+        <LearningPathMap
+          sections={pathSections}
+          futureStages={futureStages}
+          activeBlockIndex={blockPageIndex}
+          onBlockIndexChange={setBlockPageIndex}
+          onLessonPress={handleLessonPress}
+        />
       </ScrollView>
     </SafeAreaView>
   );
@@ -107,79 +95,6 @@ const styles = StyleSheet.create({
   content: {
     padding: spacing.lg,
     gap: spacing.lg,
-  },
-  hero: {
-    marginTop: spacing.xl,
-    gap: spacing.xs,
-  },
-  kicker: {
-    color: colors.accent,
-    fontSize: 14,
-    fontWeight: '700',
-    textTransform: 'uppercase',
-    letterSpacing: 1.5,
-  },
-  title: {
-    color: colors.text,
-    fontSize: 40,
-    fontWeight: '800',
-  },
-  subtitle: {
-    color: colors.textMuted,
-    fontSize: 16,
-    lineHeight: 22,
-  },
-  actions: {
-    gap: spacing.sm,
-  },
-  card: {
-    backgroundColor: colors.surface,
-    borderRadius: radius.lg,
-    padding: spacing.lg,
-    gap: spacing.sm,
-    borderWidth: 1,
-    borderColor: colors.border,
-  },
-  noteCard: {
-    backgroundColor: colors.surfaceAlt,
-  },
-  cardTitle: {
-    color: colors.text,
-    fontSize: 18,
-    fontWeight: '700',
-  },
-  cardText: {
-    color: colors.textMuted,
-    fontSize: 15,
-    lineHeight: 21,
-  },
-  blockRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: spacing.sm,
-  },
-  blockInfo: {
-    flex: 1,
-    gap: 2,
-  },
-  blockTitle: {
-    color: colors.text,
-    fontSize: 14,
-    fontWeight: '700',
-  },
-  blockText: {
-    color: colors.textMuted,
-    fontSize: 12,
-    lineHeight: 18,
-  },
-  blockButton: {
-    minWidth: 88,
-    paddingVertical: spacing.sm,
-    paddingHorizontal: spacing.md,
-  },
-  blockStatus: {
-    color: colors.accent,
-    fontSize: 12,
-    fontWeight: '700',
+    paddingBottom: spacing.xl * 2,
   },
 });

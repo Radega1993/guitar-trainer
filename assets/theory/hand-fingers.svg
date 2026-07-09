@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 400" fill="none">
+  <rect width="800" height="400" fill="#2a2522"/>
+  <text x="400" y="36" text-anchor="middle" fill="#f5f0e9" font-size="26" font-family="sans-serif" font-weight="bold">Dedos de ambas manos</text>
+  <text x="200" y="80" text-anchor="middle" fill="#facc15" font-size="18" font-weight="bold">Mano izquierda</text>
+  <text x="600" y="80" text-anchor="middle" fill="#facc15" font-size="18" font-weight="bold">Mano derecha</text>
+  <text x="200" y="200" text-anchor="middle" fill="#f5f0e9" font-size="48">1 2 3 4</text>
+  <text x="200" y="240" text-anchor="middle" fill="#b8ada2" font-size="14">índice · medio · anular · meñique</text>
+  <text x="600" y="200" text-anchor="middle" fill="#f5f0e9" font-size="48">p i m a</text>
+  <text x="600" y="240" text-anchor="middle" fill="#b8ada2" font-size="14">pulgar · índice · medio · anular</text>
+  <text x="400" y="340" text-anchor="middle" fill="#b8ada2" font-size="15">Izquierda: números. Derecha: letras (técnica clásica).</text>
+</svg>

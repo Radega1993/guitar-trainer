@@ -20,6 +20,19 @@ export function getFeedbackAudioRelativePath(kind: FeedbackSound): string {
 /**
  * Build all expected keys for a given range, useful for preload.
  */
+export function listStage1AudioKeys(): string[] {
+  const out: string[] = [];
+  for (let string = 1; string <= 6; string += 1) {
+    for (let fret = 0; fret <= 3; fret += 1) {
+      out.push(`c${string}t${fret}`);
+    }
+  }
+  return out;
+}
+
+export const getAudioPathForPosition = getPositionAudioRelativePath;
+
+/** Build all expected keys for a given range, useful for preload. */
 export function listPositionAudioKeys(maxFret = 12): string[] {
   const out: string[] = [];
   for (let string = 1; string <= 6; string += 1) {
