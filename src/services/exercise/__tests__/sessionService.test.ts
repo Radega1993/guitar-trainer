@@ -12,7 +12,7 @@ describe('sessionService', () => {
   });
 
   it('creates a study block session combining levels', () => {
-    const session = createStudyBlockSession('block-open-and-first');
+    const session = createStudyBlockSession('block-1-treble-foundations');
     expect(session.mode).toBe('block');
     expect(session.questions.length).toBeGreaterThan(8);
   });

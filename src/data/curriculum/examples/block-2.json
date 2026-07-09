@@ -1,0 +1,20 @@
+{
+  "id": "block-2-third-string",
+  "order": 2,
+  "title": "Bloque 2 · Integración de tercera cuerda",
+  "description": "Añade cuerda 3 y gana fluidez en registro agudo.",
+  "pedagogicalFocus": "Integración de patrones de lectura en tres cuerdas.",
+  "targetOutcomes": ["Dominar Sol-La-Si", "Leer con continuidad en cuerdas 1-2-3"],
+  "prerequisiteBlockIds": ["block-1-treble-foundations"],
+  "theoryLessons": [
+    {
+      "id": "th-b2-l1",
+      "title": "Tercera cuerda natural",
+      "summary": "Lectura de Sol, La y Si en tercera cuerda.",
+      "keyConcepts": ["Centro del pentagrama", "Anclaje visual"],
+      "relatedNotes": ["G4", "A4", "B4"]
+    }
+  ],
+  "levels": [],
+  "reward": "Desbloquea bloque 3"
+}

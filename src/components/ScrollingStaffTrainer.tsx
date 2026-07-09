@@ -21,6 +21,7 @@ import {
 import { colors, radius, spacing } from '../theme';
 import { useSettingsStore } from '../settings/store';
 import { formatAmericanRawName } from '../settings/noteFormat';
+import { audioService } from '../services/audio/AudioService';
 
 export interface ScrollingTrainerNote {
   id: string;
@@ -44,6 +45,8 @@ export interface ScrollingStaffTrainerProps {
   pauseOnWrongAnswer?: boolean;
   showTargetZone?: boolean;
   lockFretboardWhileMoving?: boolean;
+  requireCorrectToAdvance?: boolean;
+  hintAfterErrors?: number;
   onResponse?: (payload: {
     questionIndex: number;
     question: Question;
@@ -73,6 +76,8 @@ export default function ScrollingStaffTrainer({
   pauseOnWrongAnswer = false,
   showTargetZone = true,
   lockFretboardWhileMoving = true,
+  requireCorrectToAdvance = false,
+  hintAfterErrors = 3,
   onResponse,
   onComplete,
   onActiveIndexChange,
@@ -84,6 +89,7 @@ export default function ScrollingStaffTrainer({
   const [canAnswerState, setCanAnswerState] = useState(false);
   const [selectedAnswer, setSelectedAnswer] = useState<{ string: number; fret: number } | null>(null);
   const [feedback, setFeedback] = useState<{ ok: boolean; message: string } | null>(null);
+  const [hintPosition, setHintPosition] = useState<{ string: number; fret: number } | null>(null);
   const [score, setScore] = useState(0);
   const [centerX, setCenterX] = useState(0);
   const [currentSpeed, setCurrentSpeed] = useState(speed);
@@ -94,6 +100,7 @@ export default function ScrollingStaffTrainer({
   const readyAtRef = useRef(0);
   const totalResponseMsRef = useRef(0);
   const feedbackTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const wrongAttemptsRef = useRef<Record<number, number>>({});
   const globalOffset = useSharedValue(0);
   const animationDuration = speedToDurationMs(currentSpeed);
 
@@ -133,8 +140,10 @@ export default function ScrollingStaffTrainer({
       setFeedback(null);
       setScore(0);
       setWaitingContinue(false);
+      setHintPosition(null);
       hasAutoStartedRef.current = false;
       totalResponseMsRef.current = 0;
+      wrongAttemptsRef.current = {};
       startAtRef.current = Date.now();
       globalOffset.value = 0;
     },
@@ -233,6 +242,7 @@ export default function ScrollingStaffTrainer({
   const continueToNext = useCallback(() => {
     setFeedback(null);
     setSelectedAnswer(null);
+    setHintPosition(null);
     setWaitingContinue(false);
     const nextIdx = nextActiveIndex(activeNoteIndex, notesQueue.length);
     if (finishIfNeeded(nextIdx)) return;
@@ -241,6 +251,7 @@ export default function ScrollingStaffTrainer({
   }, [activeNoteIndex, notesQueue.length, finishIfNeeded, moveTimelineToActive]);
 
   const handleSelect = (selection: { string: number; fret: number }) => {
+    void audioService.playFretTap();
     if (!canAnswer(canAnswerState, isMoving, lockFretboardWhileMoving)) return;
     const active = notesQueue[activeNoteIndex];
     if (!active) return;
@@ -250,6 +261,17 @@ export default function ScrollingStaffTrainer({
     const ok = active.validPositions.some(
       (v) => v.string === selection.string && v.fret === selection.fret
     );
+    if (ok) {
+      wrongAttemptsRef.current[active.questionIndex] = 0;
+      setHintPosition(null);
+    } else {
+      const prevWrong = wrongAttemptsRef.current[active.questionIndex] ?? 0;
+      const nextWrong = prevWrong + 1;
+      wrongAttemptsRef.current[active.questionIndex] = nextWrong;
+      if (nextWrong >= hintAfterErrors) {
+        setHintPosition(active.validPositions[0]);
+      }
+    }
 
     setSelectedAnswer(selection);
     setCanAnswerState(false);
@@ -257,12 +279,16 @@ export default function ScrollingStaffTrainer({
       ok,
       message: ok
         ? '¡Correcto!'
-        : `Era ${active.displayName} en ${active.validPositions[0].string}.ª cuerda traste ${active.validPositions[0].fret}`,
+        : wrongAttemptsRef.current[active.questionIndex] >= hintAfterErrors
+        ? `Pista: ${active.displayName} está en ${active.validPositions[0].string}.ª cuerda traste ${active.validPositions[0].fret}`
+        : `Inténtalo de nuevo`,
     });
     setNotesQueue((prev) =>
       prev.map((n, i) => (i === activeNoteIndex ? { ...n, status: ok ? 'correct' : 'wrong' } : n))
     );
     if (ok) setScore((s) => s + 1);
+    void audioService.playFeedback(ok);
+    void audioService.playCorrectForAnswer(active.validPositions[0]);
 
     onResponse?.({
       questionIndex: active.questionIndex,
@@ -271,6 +297,19 @@ export default function ScrollingStaffTrainer({
       isCorrect: ok,
       responseTimeMs,
     });
+
+    if (!ok && requireCorrectToAdvance) {
+      if (feedbackTimerRef.current) clearTimeout(feedbackTimerRef.current);
+      feedbackTimerRef.current = setTimeout(() => {
+        setFeedback(null);
+        setSelectedAnswer(null);
+        setCanAnswerState(true);
+        setNotesQueue((prev) =>
+          prev.map((n, i) => (i === activeNoteIndex ? { ...n, status: 'active' } : n))
+        );
+      }, FEEDBACK_DELAY_MS);
+      return;
+    }
 
     if (!ok && pauseOnWrongAnswer) {
       setWaitingContinue(true);
@@ -291,12 +330,18 @@ export default function ScrollingStaffTrainer({
   const canTapFretboard = canAnswerState && !lockByMovement && !waitingContinue;
 
   const marker = useMemo(() => {
+    if (hintPosition && canAnswerState) {
+      return {
+        position: hintPosition,
+        status: 'selected' as MarkerStatus,
+      };
+    }
     if (!selectedAnswer || !feedback) return null;
     return {
       position: selectedAnswer,
       status: (feedback.ok ? 'correct' : 'wrong') as MarkerStatus,
     };
-  }, [selectedAnswer, feedback]);
+  }, [selectedAnswer, feedback, hintPosition, canAnswerState]);
 
   const activeTargetString = notesQueue[activeNoteIndex]?.validPositions[0]?.string ?? null;
   const activeDisplayName = notesQueue[activeNoteIndex]?.displayName ?? '';

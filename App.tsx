@@ -12,6 +12,9 @@ import StatsScreen from './src/screens/StatsScreen';
 import SettingsScreen from './src/screens/SettingsScreen';
 import StudyBlockScreen from './src/screens/StudyBlockScreen';
 import InfinitePracticeScreen from './src/screens/InfinitePracticeScreen';
+import PracticeSetupScreen from './src/screens/PracticeSetupScreen';
+import PracticeSessionScreen from './src/screens/PracticeSessionScreen';
+import PracticeSummaryScreen from './src/screens/PracticeSummaryScreen';
 import { AppProviders } from './src/app/providers/AppProviders';
 import { colors } from './src/theme';
 
@@ -79,6 +82,21 @@ function RootNavigator() {
           name="InfinitePractice"
           component={InfinitePracticeScreen}
           options={{ title: 'Práctica infinita' }}
+        />
+        <Stack.Screen
+          name="PracticeSetup"
+          component={PracticeSetupScreen}
+          options={{ title: 'Configurar práctica' }}
+        />
+        <Stack.Screen
+          name="PracticeSession"
+          component={PracticeSessionScreen}
+          options={{ title: 'Sesión de práctica' }}
+        />
+        <Stack.Screen
+          name="PracticeSummary"
+          component={PracticeSummaryScreen}
+          options={{ title: 'Resumen práctica', headerBackVisible: false }}
         />
       </Stack.Navigator>
     </NavigationContainer>

@@ -1,0 +1,55 @@
+{
+  "id": "block-1-treble-foundations",
+  "order": 1,
+  "title": "Bloque 1 · Fundamentos agudos",
+  "description": "Lectura inicial en primera posición sobre cuerdas 1 y 2.",
+  "pedagogicalFocus": "Reconocimiento de notas naturales y orientación de mástil.",
+  "targetOutcomes": ["Leer notas en primera y segunda cuerda", "Asociar pentagrama con posición"],
+  "prerequisiteBlockIds": [],
+  "theoryLessons": [
+    {
+      "id": "th-b1-l1",
+      "title": "Clave de sol y primera cuerda",
+      "summary": "Ubicación de Mi, Fa y Sol en primera cuerda.",
+      "keyConcepts": ["Clave de sol", "Altura relativa", "Primera posición"],
+      "relatedNotes": ["E5", "F5", "G5"]
+    }
+  ],
+  "levels": [
+    {
+      "id": "b1-l1",
+      "blockId": "block-1-treble-foundations",
+      "order": 1,
+      "title": "Nivel 1 · Primera cuerda",
+      "goal": "Identificar Mi, Fa y Sol en primera cuerda.",
+      "levelRefIds": ["l1-string1"],
+      "theoryLessonIds": ["th-b1-l1"],
+      "exerciseConfigs": [
+        {
+          "id": "b1-l1-core",
+          "exerciseType": "note-identification",
+          "notePool": ["E5", "F5", "G5"],
+          "allowedStrings": [1],
+          "fretRange": { "min": 0, "max": 3 },
+          "timing": { "targetResponseMs": 3600 },
+          "feedbackMode": "immediate",
+          "passCriteria": { "accuracyMin": 0.7, "maxAvgResponseMs": 4200, "minQuestions": 8 }
+        }
+      ],
+      "starThresholds": [
+        { "stars": 1, "accuracyMin": 0.7, "maxAvgResponseMs": 4200 },
+        { "stars": 2, "accuracyMin": 0.82, "maxAvgResponseMs": 3200 },
+        { "stars": 3, "accuracyMin": 0.92, "maxAvgResponseMs": 2400 }
+      ],
+      "unlockRequirements": {},
+      "miniStudies": []
+    }
+  ],
+  "blockExam": {
+    "id": "exam-b1",
+    "title": "Examen bloque 1",
+    "exerciseConfigId": "b1-l1-core",
+    "passCriteria": { "accuracyMin": 0.8, "maxAvgResponseMs": 3000, "minQuestions": 12, "maxWrong": 3 }
+  },
+  "reward": "Desbloquea bloque 2"
+}

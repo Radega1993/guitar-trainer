@@ -1,15 +1,30 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { ScrollView, StyleSheet, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import PrimaryButton from '../components/common/PrimaryButton';
-import { STUDY_BLOCKS } from '../data/studyBlocks';
+import { StudyBlock } from '../data/curriculum';
+import { resolveCurriculumSource } from '../data/curriculum/loader';
+import { useProgress } from '../storage/ProgressContext';
 import { colors, radius, spacing } from '../theme';
 import { RootStackParamList } from '../navigation/types';
 
 type Props = NativeStackScreenProps<RootStackParamList, 'Home'>;
 
 export default function HomeScreen({ navigation }: Props) {
+  const { isStudyBlockUnlocked } = useProgress();
+  const [blocks, setBlocks] = useState<StudyBlock[]>([]);
+
+  useEffect(() => {
+    let mounted = true;
+    void resolveCurriculumSource().then((data) => {
+      if (mounted) setBlocks(data);
+    });
+    return () => {
+      mounted = false;
+    };
+  }, []);
+
   return (
     <SafeAreaView style={styles.safe} edges={['top', 'bottom']}>
       <ScrollView contentContainerStyle={styles.content}>
@@ -26,7 +41,7 @@ export default function HomeScreen({ navigation }: Props) {
           <PrimaryButton
             label="Práctica infinita"
             variant="secondary"
-            onPress={() => navigation.navigate('InfinitePractice')}
+            onPress={() => navigation.navigate('PracticeSetup')}
           />
           <PrimaryButton
             label="Estadísticas"
@@ -51,15 +66,19 @@ export default function HomeScreen({ navigation }: Props) {
 
         <View style={styles.card}>
           <Text style={styles.cardTitle}>Bloques de estudio</Text>
-          {STUDY_BLOCKS.map((block) => (
+          {blocks.map((block) => (
             <View key={block.id} style={styles.blockRow}>
               <View style={styles.blockInfo}>
                 <Text style={styles.blockTitle}>{block.title}</Text>
                 <Text style={styles.blockText}>{block.description}</Text>
+                <Text style={styles.blockStatus}>
+                  {isStudyBlockUnlocked(block.id) ? 'Desbloqueado' : 'Bloqueado'}
+                </Text>
               </View>
               <PrimaryButton
                 label="Abrir"
                 variant="secondary"
+                disabled={!isStudyBlockUnlocked(block.id)}
                 onPress={() => navigation.navigate('StudyBlock', { blockId: block.id })}
                 style={styles.blockButton}
               />
@@ -157,5 +176,10 @@ const styles = StyleSheet.create({
     minWidth: 88,
     paddingVertical: spacing.sm,
     paddingHorizontal: spacing.md,
+  },
+  blockStatus: {
+    color: colors.accent,
+    fontSize: 12,
+    fontWeight: '700',
   },
 });

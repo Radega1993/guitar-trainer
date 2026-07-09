@@ -1,8 +1,31 @@
+import { Position } from '../../domain/fretboard';
+
+export type FeedbackSound = 'correct' | 'wrong' | 'tap';
+
+const NOTE_AUDIO_FOLDER = '/assets/audio/notes';
+const FEEDBACK_AUDIO_FOLDER = '/assets/audio/feedback';
+
+export function positionToAudioKey(position: Position): string {
+  return `c${position.string}t${position.fret}`;
+}
+
+export function getPositionAudioRelativePath(position: Position): string {
+  return `${NOTE_AUDIO_FOLDER}/${positionToAudioKey(position)}.mp3`;
+}
+
+export function getFeedbackAudioRelativePath(kind: FeedbackSound): string {
+  return `${FEEDBACK_AUDIO_FOLDER}/${kind}.mp3`;
+}
+
 /**
- * Audio-ready layer for note-by-note recordings.
- * Keep file naming as `assets/audio/notes/<AMERICAN_NOTE>.mp3`, e.g. `G4.mp3`.
- * This catalog currently returns URI strings and can be wired to expo-av later.
+ * Build all expected keys for a given range, useful for preload.
  */
-export function getNoteAudioRelativePath(americanNoteWithOctave: string): string {
-  return `assets/audio/notes/${americanNoteWithOctave}.mp3`;
+export function listPositionAudioKeys(maxFret = 12): string[] {
+  const out: string[] = [];
+  for (let string = 1; string <= 6; string += 1) {
+    for (let fret = 0; fret <= maxFret; fret += 1) {
+      out.push(`c${string}t${fret}`);
+    }
+  }
+  return out;
 }

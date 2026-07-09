@@ -1,5 +1,5 @@
 import React from 'react';
-import { ScrollView, StyleSheet, Text, View } from 'react-native';
+import { ScrollView, StyleSheet, Switch, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import NoteNamingSelector from '../components/common/NoteNamingSelector';
 import { useSettingsStore } from '../settings/store';
@@ -9,6 +9,14 @@ import { colors, radius, spacing } from '../theme';
 export default function SettingsScreen() {
   const noteNamingSystem = useSettingsStore((s) => s.noteNamingSystem);
   const setNoteNamingSystem = useSettingsStore((s) => s.setNoteNamingSystem);
+  const soundEnabled = useSettingsStore((s) => s.soundEnabled);
+  const playCorrectNoteAfterAnswer = useSettingsStore((s) => s.playCorrectNoteAfterAnswer);
+  const feedbackSoundsEnabled = useSettingsStore((s) => s.feedbackSoundsEnabled);
+  const fretTapSoundEnabled = useSettingsStore((s) => s.fretTapSoundEnabled);
+  const setSoundEnabled = useSettingsStore((s) => s.setSoundEnabled);
+  const setPlayCorrectNoteAfterAnswer = useSettingsStore((s) => s.setPlayCorrectNoteAfterAnswer);
+  const setFeedbackSoundsEnabled = useSettingsStore((s) => s.setFeedbackSoundsEnabled);
+  const setFretTapSoundEnabled = useSettingsStore((s) => s.setFretTapSoundEnabled);
 
   return (
     <SafeAreaView style={styles.safe} edges={['bottom']}>
@@ -28,8 +36,60 @@ export default function SettingsScreen() {
           <Text style={styles.preview}>{formatAmericanRawName('C#5', noteNamingSystem)}</Text>
           <Text style={styles.preview}>{formatAmericanRawName('F3', noteNamingSystem)}</Text>
         </View>
+
+        <View style={styles.card}>
+          <Text style={styles.title}>Sonido</Text>
+          <ToggleRow
+            label="Activar sonidos"
+            value={soundEnabled}
+            onChange={setSoundEnabled}
+          />
+          <ToggleRow
+            label="Nota correcta tras responder"
+            value={playCorrectNoteAfterAnswer}
+            onChange={setPlayCorrectNoteAfterAnswer}
+            disabled={!soundEnabled}
+          />
+          <ToggleRow
+            label="Feedback acierto/error"
+            value={feedbackSoundsEnabled}
+            onChange={setFeedbackSoundsEnabled}
+            disabled={!soundEnabled}
+          />
+          <ToggleRow
+            label="Sonido al pulsar mástil"
+            value={fretTapSoundEnabled}
+            onChange={setFretTapSoundEnabled}
+            disabled={!soundEnabled}
+          />
+        </View>
       </ScrollView>
     </SafeAreaView>
+  );
+}
+
+function ToggleRow({
+  label,
+  value,
+  onChange,
+  disabled,
+}: {
+  label: string;
+  value: boolean;
+  onChange: (v: boolean) => void;
+  disabled?: boolean;
+}) {
+  return (
+    <View style={styles.toggleRow}>
+      <Text style={[styles.toggleLabel, disabled && styles.toggleLabelDisabled]}>{label}</Text>
+      <Switch
+        value={value}
+        onValueChange={onChange}
+        disabled={disabled}
+        trackColor={{ false: colors.surfaceAlt, true: colors.accent }}
+        thumbColor="#ffffff"
+      />
+    </View>
   );
 }
 
@@ -64,5 +124,19 @@ const styles = StyleSheet.create({
     color: colors.accent,
     fontSize: 17,
     fontWeight: '700',
+  },
+  toggleRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    gap: spacing.md,
+  },
+  toggleLabel: {
+    color: colors.text,
+    fontSize: 14,
+    flex: 1,
+  },
+  toggleLabelDisabled: {
+    color: colors.textMuted,
   },
 });

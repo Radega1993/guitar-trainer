@@ -10,6 +10,9 @@ export async function loadProgress(): Promise<ProgressState> {
     const parsed = JSON.parse(raw) as ProgressState;
     return {
       levels: parsed.levels ?? {},
+      studyLevels: parsed.studyLevels ?? {},
+      blocks: parsed.blocks ?? {},
+      exams: parsed.exams ?? {},
       stats: { ...emptyProgress.stats, ...parsed.stats },
     };
   } catch {

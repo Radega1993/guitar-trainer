@@ -9,6 +9,8 @@ export interface LevelProgressSnapshot {
 export interface RoundEvent {
   id: string;
   levelId: string;
+  sessionMode?: string;
+  sessionSource?: string;
   startedAt: string;
   endedAt: string;
   totalQuestions: number;
@@ -22,6 +24,8 @@ export interface ResponseEvent {
   roundId: string;
   questionIndex: number;
   levelId: string;
+  sessionMode?: string;
+  sessionSource?: string;
   targetNote: string;
   targetString: number;
   targetFret: number;
@@ -32,8 +36,26 @@ export interface ResponseEvent {
   createdAt: string;
 }
 
+export interface BlockProgressSnapshot {
+  blockId: string;
+  bestStars: number;
+  attempts: number;
+  completed: boolean;
+  examPassed: boolean;
+}
+
+export interface ExamAttemptEvent {
+  id: string;
+  blockId: string;
+  score: number;
+  passed: boolean;
+  createdAt: string;
+}
+
 interface WebAnalyticsStore {
   levelProgress: Record<string, LevelProgressSnapshot>;
+  blockProgress: Record<string, BlockProgressSnapshot>;
+  examAttempts: ExamAttemptEvent[];
   rounds: RoundEvent[];
   responses: ResponseEvent[];
 }
@@ -46,6 +68,8 @@ function getStore(): WebAnalyticsStore {
   if (!globalStore.__guitarTrainerWebAnalyticsStore) {
     globalStore.__guitarTrainerWebAnalyticsStore = {
       levelProgress: {},
+      blockProgress: {},
+      examAttempts: [],
       rounds: [],
       responses: [],
     };
@@ -72,9 +96,21 @@ export async function saveResponseEvent(response: ResponseEvent): Promise<void> 
   store.responses.push(response);
 }
 
+export async function upsertBlockProgressSnapshot(snapshot: BlockProgressSnapshot): Promise<void> {
+  const store = getStore();
+  store.blockProgress[snapshot.blockId] = snapshot;
+}
+
+export async function saveExamAttemptEvent(event: ExamAttemptEvent): Promise<void> {
+  const store = getStore();
+  store.examAttempts.push(event);
+}
+
 export async function clearAnalyticsData(): Promise<void> {
   const store = getStore();
   store.levelProgress = {};
+  store.blockProgress = {};
+  store.examAttempts = [];
   store.rounds = [];
   store.responses = [];
 }

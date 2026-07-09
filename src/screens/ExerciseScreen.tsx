@@ -1,4 +1,4 @@
-import React, { useMemo, useRef, useState } from 'react';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
@@ -8,8 +8,11 @@ import { Question } from '../engine/exercise';
 import { summarizeRound } from '../engine/scoring';
 import { noteNameEn } from '../domain/notes';
 import {
+  createBlockExamSession,
   createInfiniteSession,
   createLevelSession,
+  createMiniStudySession,
+  createStudyLevelSession,
   createStudyBlockSession,
 } from '../services/exercise/sessionService';
 import { useProgress } from '../storage/ProgressContext';
@@ -18,6 +21,7 @@ import {
   saveResponseEvent,
   saveRoundEvent,
 } from '../storage/sqlite/eventsRepository';
+import { audioService } from '../services/audio/AudioService';
 import { colors, radius, spacing } from '../theme';
 import { RootStackParamList } from '../navigation/types';
 
@@ -27,14 +31,23 @@ export default function ExerciseScreen({ route, navigation }: Props) {
   const mode = route.params.sessionMode ?? 'level';
   const sourceId = route.params.sourceId ?? route.params.levelId ?? 'l1-string1';
   const session = useMemo(() => {
+    if (mode === 'block' && sourceId.startsWith('exam:')) {
+      return createBlockExamSession(sourceId.replace('exam:', ''));
+    }
+    if (mode === 'level' && route.params.studyLevelId) {
+      return createStudyLevelSession(route.params.studyLevelId, route.params.exerciseConfigId);
+    }
+    if (mode === 'level' && sourceId.startsWith('mini:')) {
+      return createMiniStudySession(sourceId.replace('mini:', ''));
+    }
     if (mode === 'block') return createStudyBlockSession(sourceId);
     if (mode === 'infinite') {
       return createInfiniteSession({ totalQuestions: 20, maxFret: 5 });
     }
     return createLevelSession(sourceId);
-  }, [mode, sourceId]);
+  }, [mode, route.params.exerciseConfigId, route.params.studyLevelId, sourceId]);
   const level = getLevel(route.params.levelId ?? sourceId);
-  const { recordRound } = useProgress();
+  const { recordRound, recordStudyLevelResult, recordBlockExamResult } = useProgress();
 
   const round = useRef<Question[]>(session.questions).current;
   const startTime = useRef<number>(Date.now());
@@ -45,6 +58,14 @@ export default function ExerciseScreen({ route, navigation }: Props) {
     () => (round.length > 0 ? (activeIndex / round.length) * 100 : 0),
     [activeIndex, round.length]
   );
+
+  useEffect(() => {
+    const positions = round.map((q) => q.position);
+    void audioService.preloadSession(positions);
+    return () => {
+      void audioService.release();
+    };
+  }, [round]);
 
   return (
     <SafeAreaView style={styles.safe} edges={['bottom']}>
@@ -108,6 +129,12 @@ export default function ExerciseScreen({ route, navigation }: Props) {
           const result = summarizeRound(correctCount, total, totalTimeMs || elapsed, avgResponseMs);
           if (level?.id) {
             recordRound(level.id, result);
+          }
+          if (route.params.studyLevelId) {
+            recordStudyLevelResult(route.params.studyLevelId, result);
+          }
+          if (mode === 'block' && sourceId.startsWith('exam:')) {
+            recordBlockExamResult(sourceId.replace('exam:', ''), result.accuracy, result.stars >= 2);
           }
           void saveRoundEvent({
             id: roundId,

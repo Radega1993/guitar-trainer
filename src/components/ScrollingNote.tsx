@@ -2,7 +2,7 @@ import React from 'react';
 import { Ellipse, G, Line, Text as SvgText } from 'react-native-svg';
 import Animated, { SharedValue, useAnimatedProps } from 'react-native-reanimated';
 import { NoteName } from '../domain/notes';
-import { MIDDLE_STEP } from '../domain/staff';
+import { MIDDLE_STEP, TOP_STEP } from '../domain/staff';
 import { StaffNoteStatus } from '../engine/scrollingTimeline';
 import { colors } from '../theme';
 
@@ -12,6 +12,44 @@ const AnimatedSvgText = Animated.createAnimatedComponent(SvgText);
 
 const NOTE_RX = 8.5;
 const NOTE_RY = 6.5;
+const LEDGER_HALF_WIDTH = 12;
+
+function buildLedgerSteps(staffStepValue: number): number[] {
+  const out: number[] = [];
+  if (staffStepValue < 0) {
+    for (let step = -2; step >= staffStepValue; step -= 2) out.push(step);
+    return out;
+  }
+  if (staffStepValue > TOP_STEP) {
+    for (let step = TOP_STEP + 2; step <= staffStepValue; step += 2) out.push(step);
+  }
+  return out;
+}
+
+function AnimatedLedgerLine({
+  initialX,
+  globalOffset,
+  y,
+  stroke,
+}: {
+  initialX: number;
+  globalOffset: SharedValue<number>;
+  y: number;
+  stroke: string;
+}) {
+  const lineProps = useAnimatedProps(
+    () => {
+      const x = initialX - globalOffset.value;
+      return {
+        x1: x - LEDGER_HALF_WIDTH,
+        x2: x + LEDGER_HALF_WIDTH,
+      };
+    },
+    [initialX, globalOffset]
+  );
+
+  return <AnimatedLine animatedProps={lineProps} y1={y} y2={y} stroke={stroke} strokeWidth={2} />;
+}
 
 interface ScrollingNoteProps {
   note: NoteName;
@@ -40,6 +78,7 @@ export default function ScrollingNote({
 }: ScrollingNoteProps) {
   const noteY = bottomLineY - staffStepValue * (lineGap / 2);
   const stemUp = staffStepValue < MIDDLE_STEP;
+  const ledgerSteps = buildLedgerSteps(staffStepValue);
 
   const isActive = status === 'active';
   const isFuture = status === 'upcoming' || status === 'moving';
@@ -77,6 +116,15 @@ export default function ScrollingNote({
 
   return (
     <G opacity={opacity}>
+      {ledgerSteps.map((step) => (
+        <AnimatedLedgerLine
+          key={`ledger-${step}`}
+          initialX={initialX}
+          globalOffset={globalOffset}
+          y={bottomLineY - step * (lineGap / 2)}
+          stroke={stroke}
+        />
+      ))}
       <AnimatedLine
         animatedProps={stemProps}
         y1={noteY}

@@ -1,0 +1,12 @@
+{
+  "id": "block-3-bass-and-integration",
+  "order": 3,
+  "title": "Bloque 3 · Registro grave e integración",
+  "description": "Trabajo de cuerdas 4, 5 y 6 con repaso global de primera posición.",
+  "pedagogicalFocus": "Lectura bajo el pentagrama y control integral del mástil inicial.",
+  "targetOutcomes": ["Reconocer notas graves", "Integrar las seis cuerdas"],
+  "prerequisiteBlockIds": ["block-2-third-string"],
+  "theoryLessons": [],
+  "levels": [],
+  "reward": "Certifica base de primera posición"
+}
