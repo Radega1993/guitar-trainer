@@ -18,7 +18,7 @@ eas init
 # Copiar projectId a .env → EAS_PROJECT_ID=...
 
 # 2. Configurar package definitivo en .env
-EXPO_PUBLIC_ANDROID_PACKAGE=com.tudominio.guitartrainer
+EXPO_PUBLIC_ANDROID_PACKAGE=com.guitar_trainer
 
 # 3. Build de prueba
 eas build --platform android --profile preview
@@ -27,7 +27,19 @@ eas build --platform android --profile preview
 eas build --platform android --profile production
 ```
 
-## Verificación previa local
+## Versionado en builds de producción
+
+`eas.json` usa `cli.appVersionSource: "remote"` para que `autoIncrement` funcione con `app.config.js`.
+EAS gestiona `versionCode` en el servidor; el valor inicial sale de `android.versionCode` en `app.config.js` (actualmente `1`).
+
+```bash
+# Ver versión remota actual
+eas build:version:get --platform android
+
+# Fijar manualmente si hace falta
+eas build:version:set --platform android
+```
+
 
 ```bash
 npm run release:prepare

@@ -5,7 +5,7 @@ Estados: `[ ] Bloqueante` `[ ] Pendiente del propietario` `[x] Completado` `[ ] 
 ## Identidad y build
 
 - [ ] Pendiente del propietario — Nombre definitivo en store.
-- [ ] Pendiente del propietario — Package name definitivo (`EXPO_PUBLIC_ANDROID_PACKAGE`).
+- [x] Completado — Package name definitivo: `com.guitar_trainer`.
 - [x] Completado — Icono base y adaptive icon.
 - [x] Completado — Splash configurado (`expo-splash-screen`).
 - [x] Completado — Versión `1.0.0` y `versionCode` 1.

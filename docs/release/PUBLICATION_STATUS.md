@@ -107,7 +107,7 @@ Las reglas `react-hooks/purity`, `immutability`, etc. del React Compiler marcan 
 
 ## Bloqueantes restantes
 
-1. `EXPO_PUBLIC_ANDROID_PACKAGE` definitivo.
+1. ~~`EXPO_PUBLIC_ANDROID_PACKAGE` definitivo.~~ Hecho: `com.guitar_trainer`.
 2. `EAS_PROJECT_ID` + keystore de release.
 3. URL pública de política de privacidad.
 4. QA manual en dispositivo Android (offline, audio, botón atrás, 16 KB pages).

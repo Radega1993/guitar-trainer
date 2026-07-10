@@ -2,7 +2,7 @@
 
 const appName = process.env.EXPO_PUBLIC_APP_NAME ?? 'Guitar Trainer';
 const androidPackage =
-  process.env.EXPO_PUBLIC_ANDROID_PACKAGE ?? 'com.placeholder.guitartrainer';
+  process.env.EXPO_PUBLIC_ANDROID_PACKAGE ?? 'com.guitar_trainer';
 
 /** @param {import('expo/config').ConfigContext} param0 */
 module.exports = ({ config }) => ({

@@ -8,7 +8,7 @@ Marca cada ítem cuando esté decidido. Los valores finales deben reflejarse en 
 |-------|-------------------|------------------|-------|
 | Nombre en store | Guitar Trainer | | |
 | Nombre en dispositivo | Guitar Trainer | | |
-| Package Android | `com.placeholder.guitartrainer` | | |
+| Package Android | `com.guitar_trainer` | `com.guitar_trainer` | 2026-07-10 |
 | Categoría Play Store | Educación / Música | | |
 
 ## Contacto y legal
@@ -49,7 +49,7 @@ Marca cada ítem cuando esté decidido. Los valores finales deben reflejarse en 
 ```bash
 # 1. Actualizar .env
 EXPO_PUBLIC_APP_NAME="..."
-EXPO_PUBLIC_ANDROID_PACKAGE="com.tudominio.guitartrainer"
+EXPO_PUBLIC_ANDROID_PACKAGE="com.guitar_trainer"
 
 # 2. Buscar y reemplazar placeholders en docs/legal/public/*.html
 

@@ -53,14 +53,12 @@ Estado de verificacion manual en este entorno:
 
 ### Bloqueantes
 
-1. No hay build AAB de produccion generado (requiere `eas login` + `eas build`).
-2. Package name Android sigue placeholder (`com.placeholder.guitartrainer`).
-3. URLs legales publicas pendientes de activar en GitHub Pages.
-4. `EAS_PROJECT_ID` no vinculado (`eas init`).
+1. No hay build AAB de produccion generado (requiere `eas build --profile production`).
+2. URLs legales publicas pendientes de activar en GitHub Pages.
 
 ### Importantes
 
-1. Faltan pruebas manuales en dispositivo Android real.
+1. El APK preview (`65a9aae2`) se genero con `com.placeholder.guitartrainer`; el siguiente build usara `com.guitar_trainer`.
 2. Compatibilidad 16 KB pages no verificada en emulador/dispositivo especifico.
 
 ## 4. Evidencias generadas
