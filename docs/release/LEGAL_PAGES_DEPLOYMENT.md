@@ -1,36 +1,27 @@
 # Deploy de paginas legales (GitHub Pages)
 
-## Objetivo
+## URL publica
 
-Publicar en URL publica los documentos:
-
-- Politica de privacidad
-- Aviso legal
-- Condiciones de uso
-- Soporte
+- Inicio: https://radega1993.github.io/guitar-trainer/
+- Privacidad: https://radega1993.github.io/guitar-trainer/privacy-policy.html
+- Aviso legal: https://radega1993.github.io/guitar-trainer/legal-notice.html
+- Condiciones: https://radega1993.github.io/guitar-trainer/terms-of-use.html
+- Soporte: https://radega1993.github.io/guitar-trainer/support.html
 
 ## Requisitos
 
 1. Repositorio en GitHub con Actions habilitadas.
-2. Permisos para activar GitHub Pages.
+2. **Settings → Pages → Build and deployment → Source: GitHub Actions**.
+3. No debe existir `.github/workflows/static.yml` (workflow duplicado de GitHub que sube todo el repo con `path: .`).
 
-## Pasos
+## Despliegue
 
-1. Subir cambios al repositorio.
-2. En GitHub, abrir **Settings > Pages**.
-3. Seleccionar fuente: **GitHub Actions**.
-4. Ejecutar workflow manual:
-   - `Deploy Legal Pages` (`workflow_dispatch`).
-5. Verificar URL publicada:
-   - `https://{{GITHUB_USER_OR_ORG}}.github.io/{{REPO_NAME}}/`
+Automatico al cambiar archivos en `docs/legal/public/` en `main`, o manual:
 
-## URL esperadas
-
-- Politica: `https://{{GITHUB_USER_OR_ORG}}.github.io/{{REPO_NAME}}/privacy-policy.html`
-- Aviso legal: `https://{{GITHUB_USER_OR_ORG}}.github.io/{{REPO_NAME}}/legal-notice.html`
-- Condiciones: `https://{{GITHUB_USER_OR_ORG}}.github.io/{{REPO_NAME}}/terms-of-use.html`
-- Soporte: `https://{{GITHUB_USER_OR_ORG}}.github.io/{{REPO_NAME}}/support.html`
+```bash
+gh workflow run deploy-legal-pages.yml
+```
 
 ## Nota
 
-No se publica automaticamente en cada push; se deja manual para evitar despliegues sin autorizacion.
+El artefacto de Pages debe contener `index.html` en la raiz. El workflow sube solo `docs/legal/public/`, no el repositorio completo.
