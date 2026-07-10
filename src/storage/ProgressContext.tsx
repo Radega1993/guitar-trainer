@@ -13,6 +13,7 @@ import { isStage1BlockUnlocked } from '../data/curriculum/stage1';
 import { stage1 } from '../data/curriculum/stage1/stage1';
 import { loadProgress, saveProgress, clearProgress } from './progressStore';
 import { emptyProgress, LevelProgress, ProgressState } from './types';
+import { STORE_CAPTURE_MODE } from '../app/config/storeCapture';
 import {
   clearAnalyticsData,
   makeEventId,
@@ -38,9 +39,15 @@ const ProgressContext = createContext<ProgressContextValue | undefined>(undefine
 
 export function ProgressProvider({ children }: { children: React.ReactNode }) {
   const [state, setState] = useState<ProgressState>(emptyProgress);
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(!STORE_CAPTURE_MODE);
 
   useEffect(() => {
+    if (STORE_CAPTURE_MODE) {
+      void clearProgress();
+      void clearAnalyticsData();
+      return;
+    }
+
     let mounted = true;
     loadProgress().then((loaded) => {
       if (mounted) {
@@ -136,6 +143,7 @@ export function ProgressProvider({ children }: { children: React.ReactNode }) {
 
   const isStudyBlockUnlocked = useCallback(
     (blockId: string) => {
+      if (STORE_CAPTURE_MODE) return true;
       return isStage1BlockUnlocked(blockId, state);
     },
     [state]
@@ -143,6 +151,7 @@ export function ProgressProvider({ children }: { children: React.ReactNode }) {
 
   const isStudyLevelUnlocked = useCallback(
     (studyLevelId: string) => {
+      if (STORE_CAPTURE_MODE) return true;
       const level = getStudyLevelById(studyLevelId);
       if (!level) return false;
       if (!isStudyBlockUnlocked(level.blockId)) return false;

@@ -1,0 +1,10 @@
+Version 1.0.0 - Lanzamiento inicial
+
+- Primer bloque de aprendizaje completo.
+- Lectura de Mi, Fa y Sol en primera cuerda.
+- Teoria con imagenes y repaso visual.
+- Mastil interactivo y ejercicios de reconocimiento.
+- Lectura animada en pentagrama.
+- Modo de practica infinita.
+- Progreso y estadisticas locales.
+- Ajuste de nomenclatura latina, americana o ambas.

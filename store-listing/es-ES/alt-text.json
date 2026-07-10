@@ -1,0 +1,10 @@
+{
+  "01-home.png": "Recorrido principal de aprendizaje con el bloque inicial visible.",
+  "02-theory.png": "Pantalla de teoria con explicacion de la primera cuerda.",
+  "03-staff.png": "Nota musical mostrada en pentagrama en clave de Sol.",
+  "04-fretboard.png": "Mastil interactivo para ubicar la nota correcta.",
+  "05-reading.png": "Ejercicio de lectura animada de notas en movimiento.",
+  "06-feedback.png": "Feedback inmediato tras responder una nota.",
+  "07-practice.png": "Configuracion del modo de practica infinita.",
+  "08-progress.png": "Estadisticas de progreso con precision y tendencias."
+}

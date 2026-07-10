@@ -1,0 +1,38 @@
+{{APP_NAME}} es una app educativa para empezar lectura musical aplicada a guitarra clasica.
+
+Esta primera version se centra en un recorrido guiado para aprender a:
+
+- reconocer notas escritas en pentagrama (clave de Sol),
+- relacionarlas con cuerda y traste en el mastil,
+- practicar lectura visual con ejercicios interactivos,
+- mejorar precision y tiempo de respuesta con repeticion estructurada.
+
+Contenido actual de la version:
+
+- curso progresivo por etapas, bloques y niveles;
+- bloque 1 completo (primera cuerda: Mi, Fa y Sol);
+- teoria educativa con imagenes;
+- quiz de refuerzo con progresion acumulativa;
+- reconocimiento de notas en pentagrama;
+- mastil interactivo;
+- lectura animada de notas de derecha a izquierda;
+- audio real de notas disponibles en el bloque inicial;
+- modo de practica infinita;
+- estadisticas de rendimiento;
+- progreso guardado localmente en el dispositivo.
+
+Como funciona:
+
+1. Lees una nota en el pentagrama.
+2. La identificas por nombre y altura.
+3. La ubicas en el mastil.
+4. Respondes y recibes feedback inmediato.
+
+El sistema pedagogico usa niveles con criterios de superacion y estrellas para ayudarte a consolidar la lectura musical antes de avanzar.
+
+La app esta pensada para funcionar principalmente offline. No necesita cuenta para usar el flujo principal de esta version.
+
+Importante:
+
+- Esta release no pretende cubrir aun todo el mastil ni todo el plan de estudios final.
+- Se publican solo funcionalidades implementadas y verificadas en la version actual.

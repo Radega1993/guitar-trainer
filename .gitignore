@@ -32,6 +32,35 @@ yarn-error.*
 
 # local env files
 .env*.local
+.env
+.env.*
+!.env.example
+
+# credentials and release secrets
+*.keystore
+*.jks
+*.p12
+*.p8
+*.key
+google-services.json
+play-account-*.json
+service-account*.json
+credentials*.json
+*.mobileprovision
+*.cer
+*.crt
+*.der
+*.asc
+*.kdbx
+
+# build outputs
+dist/android/
+play-store-assets/
+artifacts/
+test-results/
+
+# eas local state
+.eas/
 
 # typescript
 *.tsbuildinfo

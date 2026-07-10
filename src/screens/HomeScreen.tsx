@@ -6,6 +6,7 @@ import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import LearningPathMap from '../components/path/LearningPathMap';
 import ModuleCompleteToast from '../components/path/ModuleCompleteToast';
 import PathHeader from '../components/path/PathHeader';
+import PrimaryButton from '../components/common/PrimaryButton';
 import { getStudyLevelById } from '../data/curriculum';
 import {
   buildFutureStagePreviews,
@@ -18,6 +19,7 @@ import { getStage1Progress } from '../data/curriculum/roadmapProgress';
 import { useProgress } from '../storage/ProgressContext';
 import { colors, spacing } from '../theme';
 import { RootStackParamList } from '../navigation/types';
+import { STORE_CAPTURE_MODE } from '../app/config/storeCapture';
 
 type Props = NativeStackScreenProps<RootStackParamList, 'Home'>;
 
@@ -96,6 +98,58 @@ export default function HomeScreen({ navigation }: Props) {
           onBlockIndexChange={setBlockPageIndex}
           onLessonPress={handleLessonPress}
         />
+
+        {STORE_CAPTURE_MODE ? (
+          <View style={styles.capturePanel}>
+            <PrimaryButton
+              label="Capture: Theory"
+              variant="secondary"
+              onPress={() => navigation.navigate('TheoryLesson', { studyLevelId: 'stage1-block1-level2' })}
+            />
+            <PrimaryButton
+              label="Capture: Staff"
+              variant="secondary"
+              onPress={() => navigation.navigate('Recognition', { studyLevelId: 'stage1-block1-level6' })}
+            />
+            <PrimaryButton
+              label="Capture: Fretboard"
+              variant="secondary"
+              onPress={() =>
+                navigation.navigate('Exercise', {
+                  sessionMode: 'level',
+                  studyLevelId: 'stage1-block1-level7',
+                  sourceId: 'stage1-block1-level7',
+                })
+              }
+            />
+            <PrimaryButton
+              label="Capture: Reading"
+              variant="secondary"
+              onPress={() =>
+                navigation.navigate('Exercise', {
+                  sessionMode: 'level',
+                  studyLevelId: 'stage1-block1-level24',
+                  sourceId: 'stage1-block1-level24',
+                })
+              }
+            />
+            <PrimaryButton
+              label="Capture: Quiz"
+              variant="secondary"
+              onPress={() => navigation.navigate('Quiz', { studyLevelId: 'stage1-block1-level5' })}
+            />
+            <PrimaryButton
+              label="Capture: Practice"
+              variant="secondary"
+              onPress={() => navigation.navigate('PracticeSetup')}
+            />
+            <PrimaryButton
+              label="Capture: Progress"
+              variant="secondary"
+              onPress={() => navigation.navigate('Stats')}
+            />
+          </View>
+        ) : null}
       </ScrollView>
     </SafeAreaView>
   );
@@ -110,5 +164,13 @@ const styles = StyleSheet.create({
     padding: spacing.lg,
     gap: spacing.lg,
     paddingBottom: spacing.xl * 2,
+  },
+  capturePanel: {
+    gap: spacing.sm,
+    padding: spacing.md,
+    borderRadius: 12,
+    borderWidth: 1,
+    borderColor: colors.border,
+    backgroundColor: colors.surfaceAlt,
   },
 });
