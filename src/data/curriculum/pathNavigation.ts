@@ -1,4 +1,5 @@
 import { getStudyBlockById, getStudyLevelById, STAGE1_BLOCKS } from './index';
+import { isStage1BlockUnlocked } from './stage1/unlock';
 import { StudyLevel } from './types';
 import { ProgressState } from '../../storage/types';
 
@@ -27,6 +28,7 @@ export function isStudyLevelComplete(levelId: string, state: ProgressState): boo
 }
 
 function isLevelUnlocked(level: StudyLevel, state: ProgressState): boolean {
+  if (!isStage1BlockUnlocked(level.blockId, state)) return false;
   const prev = level.unlockRequirements.previousLevelId;
   if (!prev) return true;
   return isLevelComplete(prev, state);
@@ -70,6 +72,7 @@ export function resolveNextLesson(
 ): LessonDestination | null {
   const block = getStudyBlockById(curriculumBlockId);
   if (!block) return null;
+  if (!isStage1BlockUnlocked(curriculumBlockId, state)) return null;
 
   for (const level of block.levels) {
     if (!isLevelUnlocked(level, state)) continue;

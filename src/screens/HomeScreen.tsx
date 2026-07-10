@@ -6,6 +6,7 @@ import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import LearningPathMap from '../components/path/LearningPathMap';
 import ModuleCompleteToast from '../components/path/ModuleCompleteToast';
 import PathHeader from '../components/path/PathHeader';
+import { getStudyLevelById } from '../data/curriculum';
 import {
   buildFutureStagePreviews,
   buildLearningPathSections,
@@ -35,11 +36,24 @@ export default function HomeScreen({ navigation }: Props) {
 
   const handleLessonPress = useCallback(
     (lesson: PathLessonNode) => {
-      if (lesson.state === 'locked') return;
+      const activeSection = pathSections[blockPageIndex];
+      const studyLevel = getStudyLevelById(lesson.studyLevelId);
+      const isTheoryPreview =
+        lesson.state === 'locked' &&
+        activeSection?.blockLocked &&
+        studyLevel?.stageLevelType === 'theory';
+
+      if (lesson.state === 'locked' && !isTheoryPreview) return;
+
+      if (isTheoryPreview) {
+        navigation.navigate('TheoryLesson', { studyLevelId: lesson.studyLevelId, preview: true });
+        return;
+      }
+
       const dest = resolveLessonForLevel(lesson.studyLevelId, state);
       if (dest) navigation.navigate(dest.screen, dest.params);
     },
-    [navigation, state]
+    [blockPageIndex, navigation, pathSections, state]
   );
 
   useFocusEffect(

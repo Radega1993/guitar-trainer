@@ -32,7 +32,6 @@ export const CURRICULUM_ROADMAP: RoadmapStage[] = [
     outcome: 'Ya sabes leer y tocar cualquier nota natural en primera posición.',
     availability: 'active',
     blocks: [
-      { id: 'rb-s1-guitar', title: 'Bienvenido a la guitarra', curriculumBlockId: 'stage1-block0' },
       { id: 'rb-s1-s1', title: 'Primera cuerda', curriculumBlockId: 'stage1-block1' },
       { id: 'rb-s1-s2', title: 'Segunda cuerda', curriculumBlockId: 'stage1-block2' },
       { id: 'rb-s1-s12', title: 'Primera + segunda cuerda', curriculumBlockId: 'stage1-block3' },

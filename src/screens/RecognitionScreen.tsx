@@ -37,16 +37,16 @@ export default function RecognitionScreen({ route, navigation }: Props) {
   const startTime = useRef(Date.now());
   const responseTimes = useRef<number[]>([]);
   const questionStart = useRef(Date.now());
-  const { recordStudyLevelResult } = useProgress();
+  const { recordStudyLevelResult, isStudyLevelUnlocked } = useProgress();
 
   const question = session.questions[index];
+  const unlocked = isStudyLevelUnlocked(studyLevelId);
 
   useEffect(() => {
-    if (question) {
-      void audioService.preloadSession([question.position]);
-      void audioService.playPosition(question.position);
-    }
-  }, [question]);
+    if (!unlocked || !question) return;
+    void audioService.preloadSession([question.position]);
+    void audioService.playPosition(question.position);
+  }, [question, unlocked]);
 
   const options = useMemo(() => {
     if (!studyLevel?.stageConfig || !question) return [];
@@ -101,7 +101,16 @@ export default function RecognitionScreen({ route, navigation }: Props) {
   if (!studyLevel || !question) {
     return (
       <SafeAreaView style={styles.safe}>
-        <Text>Ejercicio no encontrado</Text>
+        <Text style={styles.prompt}>Ejercicio no encontrado</Text>
+        <PrimaryButton label="Volver" onPress={() => navigation.goBack()} />
+      </SafeAreaView>
+    );
+  }
+
+  if (!unlocked) {
+    return (
+      <SafeAreaView style={styles.safe}>
+        <Text style={styles.prompt}>Lección bloqueada</Text>
         <PrimaryButton label="Volver" onPress={() => navigation.goBack()} />
       </SafeAreaView>
     );

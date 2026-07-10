@@ -14,6 +14,7 @@ import { colors, radius, spacing } from '../../theme';
 interface PathLessonDotProps {
   lesson: PathLessonNode;
   onPress: (lesson: PathLessonNode) => void;
+  preview?: boolean;
 }
 
 const DOT_SIZE = 52;
@@ -33,10 +34,12 @@ function stateColors(state: PathLessonNode['state']) {
   }
 }
 
-export default function PathLessonDot({ lesson, onPress }: PathLessonDotProps) {
-  const palette = stateColors(lesson.state);
+export default function PathLessonDot({ lesson, onPress, preview }: PathLessonDotProps) {
+  const palette = preview
+    ? { bg: colors.surfaceAlt, border: colors.accent, icon: colors.text }
+    : stateColors(lesson.state);
   const pulse = useSharedValue(1);
-  const disabled = lesson.state === 'locked';
+  const disabled = lesson.state === 'locked' && !preview;
   const iconType = resolveExerciseIconType(lesson.levelType, lesson.state, lesson.isBoss);
 
   useEffect(() => {
@@ -61,7 +64,7 @@ export default function PathLessonDot({ lesson, onPress }: PathLessonDotProps) {
       disabled={disabled}
       style={({ pressed }) => [styles.wrap, pressed && !disabled && styles.pressed]}
       accessibilityRole="button"
-      accessibilityLabel={lesson.title}
+      accessibilityLabel={preview ? `${lesson.title} — vista previa` : lesson.title}
       accessibilityState={{ disabled }}
     >
       <Animated.View
@@ -83,7 +86,7 @@ export default function PathLessonDot({ lesson, onPress }: PathLessonDotProps) {
           />
         </View>
       </Animated.View>
-      <Text style={[styles.label, disabled && styles.labelLocked]} numberOfLines={2}>
+      <Text style={[styles.label, disabled && styles.labelLocked, preview && styles.labelPreview]} numberOfLines={2}>
         {lesson.title}
       </Text>
       {lesson.stars > 0 ? (
@@ -126,6 +129,7 @@ const styles = StyleSheet.create({
     marginTop: 2,
   },
   labelLocked: { color: colors.textMuted },
+  labelPreview: { color: colors.accent },
   stars: { fontSize: 9, color: colors.star, letterSpacing: -1 },
   starsPlaceholder: { height: 11 },
 });

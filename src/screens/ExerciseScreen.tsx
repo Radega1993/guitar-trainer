@@ -2,6 +2,7 @@ import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
+import PrimaryButton from '../components/common/PrimaryButton';
 import ScrollingStaffTrainer from '../components/staff/ScrollingStaffTrainer';
 import StaticFretboardTrainer from '../components/staff/StaticFretboardTrainer';
 import { getLevel } from '../data/levels';
@@ -56,7 +57,8 @@ export default function ExerciseScreen({ route, navigation }: Props) {
   }, [mode, route.params.exerciseConfigId, route.params.studyLevelId, sourceId]);
 
   const level = getLevel(route.params.levelId ?? sourceId);
-  const { recordRound, recordStudyLevelResult, recordBlockExamResult } = useProgress();
+  const { recordRound, recordStudyLevelResult, recordBlockExamResult, isStudyLevelUnlocked } =
+    useProgress();
 
   const round = useRef<Question[]>(session.questions).current;
   const startTime = useRef<number>(Date.now());
@@ -173,6 +175,15 @@ export default function ExerciseScreen({ route, navigation }: Props) {
   const title =
     studyLevel?.title ??
     (mode === 'level' ? level?.name ?? 'Ejercicio' : mode === 'block' ? 'Bloque de estudio' : 'Práctica infinita');
+
+  if (route.params.studyLevelId && !isStudyLevelUnlocked(route.params.studyLevelId)) {
+    return (
+      <SafeAreaView style={styles.safe}>
+        <Text style={styles.levelName}>Lección bloqueada</Text>
+        <PrimaryButton label="Volver" onPress={() => navigation.goBack()} />
+      </SafeAreaView>
+    );
+  }
 
   return (
     <SafeAreaView style={styles.safe} edges={['bottom']}>

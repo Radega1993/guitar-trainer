@@ -122,20 +122,249 @@ export const theoryBlock00: TheoryContent[] = [
 
 export const theoryBlock01: TheoryContent[] = [
   {
-    id: 'theory-stage1-block1-intro',
+    id: 'theory-stage1-block1-welcome',
+    title: 'Bienvenida',
+    pages: [
+      {
+        title: 'Primera cuerda',
+        body:
+          'Bienvenido al Bloque 1 — Primera cuerda.\n\n' +
+          'En este bloque aprenderás a leer, reconocer y tocar las tres primeras notas de la primera cuerda de la guitarra clásica:\n\n' +
+          'Mi / E\nFa / F\nSol / G\n\n' +
+          'Al finalizar, podrás mirar una nota en el pentagrama y tocarla correctamente en la primera cuerda sin dudar.',
+      },
+    ],
+  },
+  {
+    id: 'theory-stage1-block1-t1',
     title: 'La primera cuerda',
     pages: [
       {
+        title: 'La primera cuerda',
+        body:
+          'La primera cuerda de la guitarra es la cuerda más fina y aguda.\n\n' +
+          'Cuando la tocamos sin pisar ningún traste, suena la nota Mi.\n\n' +
+          'A tocar una cuerda sin pisar ningún traste lo llamamos tocar la cuerda al aire.',
+        image: {
+          asset: 't1p1',
+          caption: 'La 1ª cuerda al aire suena Mi / E.',
+          attribution: 'Guitar Trainer',
+        },
+      },
+      {
         title: 'La cuerda más aguda',
-        body: 'La primera cuerda de la guitarra es la cuerda más fina y aguda. Al tocarla al aire suena Mi.',
+        body:
+          'En la guitarra, las cuerdas se cuentan desde abajo hacia arriba cuando miras el instrumento en posición de tocar.\n\n' +
+          'La primera cuerda está abajo visualmente, pero es la más aguda.\n\n' +
+          'Esto puede parecer extraño al principio, pero lo aprenderás rápido con la práctica.',
+        image: {
+          asset: 't1p2',
+          caption: '1ª cuerda = más aguda · 6ª cuerda = más grave.',
+          attribution: 'Guitar Trainer',
+        },
+      },
+    ],
+  },
+  {
+    id: 'theory-stage1-block1-t2',
+    title: 'Mi / E',
+    pages: [
+      {
+        title: 'Mi en la primera cuerda',
+        body:
+          'La primera nota que aprenderás es Mi.\n\n' +
+          'Mi se toca en la primera cuerda al aire. Eso significa:\n\n' +
+          'Cuerda: 1\nTraste: 0\nNota: Mi / E\n\n' +
+          'No necesitas pulsar ningún traste con la mano izquierda.',
+        image: {
+          asset: 't2p1',
+          caption: 'Mi / E — cuerda 1, traste 0.',
+          attribution: 'Guitar Trainer',
+        },
       },
       {
-        title: 'Tres primeras notas',
-        body: 'En primera posición aprenderás Mi al aire (traste 0), Fa en el traste 1 y Sol en el traste 3.',
+        title: 'Mi en el pentagrama',
+        body:
+          'En el pentagrama, Mi de la primera cuerda se coloca en la primera línea.\n\n' +
+          'Esta será una de tus notas de referencia.\n\n' +
+          'Cuando veas esta nota, piensa: “Primera cuerda al aire”.',
+        image: {
+          asset: 't2p2',
+          caption: 'Mi en la primera línea del pentagrama.',
+          attribution: 'Guitar Trainer',
+        },
+      },
+    ],
+  },
+  {
+    id: 'theory-stage1-block1-t3',
+    title: 'Fa / F',
+    pages: [
+      {
+        title: 'Fa en la primera cuerda',
+        body:
+          'La segunda nota es Fa.\n\n' +
+          'Fa se toca en la primera cuerda, traste 1. Para tocarla, coloca el dedo 1 de la mano izquierda justo detrás del primer traste.\n\n' +
+          'Cuerda: 1\nTraste: 1\nDedo: 1\nNota: Fa / F',
+        image: {
+          asset: 't3p1',
+          caption: 'Fa / F — cuerda 1, traste 1, dedo 1.',
+          attribution: 'Guitar Trainer',
+        },
       },
       {
-        title: 'Dedos recomendados',
-        body: 'Usa el dedo 1 para Fa y el dedo 3 para Sol. Mantén la mano relajada y cerca del diapasón.',
+        title: 'Fa está justo encima de Mi',
+        body:
+          'En el pentagrama, Fa está en el primer espacio.\n\n' +
+          'Mi está en la primera línea. Fa está justo encima.\n\n' +
+          'Esto te ayuda a leer mejor: cuando la nota sube en el pentagrama, también sube el sonido.',
+        image: {
+          asset: 't3p2',
+          caption: 'Mi en la línea, Fa en el espacio de encima.',
+          attribution: 'Guitar Trainer',
+        },
+      },
+    ],
+  },
+  {
+    id: 'theory-stage1-block1-t4',
+    title: 'Sol / G',
+    pages: [
+      {
+        title: 'Sol en la primera cuerda',
+        body:
+          'La tercera nota es Sol.\n\n' +
+          'Sol se toca en la primera cuerda, traste 3. Normalmente se usa el dedo 3 de la mano izquierda.\n\n' +
+          'Cuerda: 1\nTraste: 3\nDedo: 3\nNota: Sol / G',
+        image: {
+          asset: 't4p1',
+          caption: 'Sol / G — cuerda 1, traste 3, dedo 3.',
+          attribution: 'Guitar Trainer',
+        },
+      },
+      {
+        title: 'Mi, Fa y Sol',
+        body:
+          'Ahora ya conoces tres notas seguidas en la primera cuerda:\n\n' +
+          'Mi al aire.\nFa en el traste 1.\nSol en el traste 3.\n\n' +
+          'Estas tres notas serán la base de tus primeros ejercicios de lectura.',
+        image: {
+          asset: 't4p2',
+          caption: 'Tres posiciones en la 1ª cuerda: trastes 0, 1 y 3.',
+          attribution: 'Guitar Trainer',
+        },
+      },
+    ],
+  },
+  {
+    id: 'theory-stage1-block1-t5',
+    title: 'Leer de abajo hacia arriba',
+    pages: [
+      {
+        title: 'Las notas suben',
+        body:
+          'Cuando una nota aparece más arriba en el pentagrama, su sonido es más agudo.\n\n' +
+          'En la primera cuerda:\n\n' +
+          'Mi está más abajo.\nFa está un poco más arriba.\nSol está todavía más arriba.\n\n' +
+          'Por eso leer música también es aprender a reconocer alturas.',
+        image: {
+          asset: 't5p1',
+          caption: 'Mi, Fa y Sol ascendentes en el pentagrama.',
+          attribution: 'Guitar Trainer',
+        },
+      },
+      {
+        title: 'Relación entre pentagrama y mástil',
+        body:
+          'La partitura te dice qué nota tocar. El mástil te dice dónde tocarla.\n\n' +
+          'En este bloque, cada nota tiene una posición clara:\n\n' +
+          'Mi: cuerda 1, traste 0.\nFa: cuerda 1, traste 1.\nSol: cuerda 1, traste 3.',
+        image: {
+          asset: 't5p2',
+          caption: 'Pentagrama y mástil: misma secuencia Mi, Fa, Sol.',
+          attribution: 'Guitar Trainer',
+        },
+      },
+    ],
+  },
+  {
+    id: 'theory-stage1-block1-t6',
+    title: 'Dedos recomendados',
+    pages: [
+      {
+        title: 'Dedo 1 y dedo 3',
+        body:
+          'Para tocar en primera posición, usamos normalmente:\n\n' +
+          'Fa con dedo 1.\nSol con dedo 3.\n\n' +
+          'El dedo debe colocarse justo detrás del traste, no encima del metal ni demasiado lejos. Así el sonido será más limpio.',
+        image: {
+          asset: 't6p1',
+          caption: 'Dedo 1 en traste 1 y dedo 3 en traste 3.',
+          attribution: 'Guitar Trainer',
+        },
+      },
+      {
+        title: 'Consejo técnico',
+        body:
+          'No aprietes más de lo necesario.\n\n' +
+          'Coloca el dedo cerca del traste y toca con calma.\n\n' +
+          'El objetivo de este bloque no es tocar rápido, sino reconocer bien Mi, Fa y Sol. La velocidad llegará después.',
+        image: {
+          asset: 't6p2',
+          caption: 'Coloca el dedo justo detrás del traste.',
+          attribution: 'Guitar Trainer',
+        },
+      },
+    ],
+  },
+  {
+    id: 'theory-stage1-block1-t7',
+    title: 'Preparación para la lectura animada',
+    pages: [
+      {
+        title: 'Leer antes de tocar',
+        body:
+          'En los ejercicios animados, las notas se moverán de derecha a izquierda.\n\n' +
+          'Mira la nota que se acerca al centro e intenta reconocerla antes de que se pare.\n\n' +
+          'Esto entrena tu lectura como si estuvieras leyendo una partitura real.',
+        image: {
+          asset: 'exercise-scrolling-preview',
+          caption: 'Vista real del pentagrama y del mastil como en los ejercicios.',
+          attribution: 'Render en app · Guitar Trainer',
+        },
+      },
+      {
+        title: 'No memorices botones',
+        body:
+          'No intentes responder por memoria visual del juego.\n\n' +
+          'Mira la partitura, reconoce la nota y después busca su posición en el mástil.\n\n' +
+          'El orden correcto es:\n\n' +
+          'Veo la nota.\nDigo su nombre.\nLa encuentro en la guitarra.\nLa toco.',
+        image: {
+          asset: 'exercise-flow-preview',
+          caption: 'Pentagrama -> nombre -> mastil -> sonido.',
+          attribution: 'Flujo didactico · Guitar Trainer',
+        },
+      },
+    ],
+  },
+  {
+    id: 'theory-stage1-block1-summary',
+    title: 'Resumen del bloque',
+    pages: [
+      {
+        title: 'Ya conoces la primera cuerda',
+        body:
+          'En este bloque has aprendido:\n\n' +
+          'Mi / E — primera cuerda al aire.\n' +
+          'Fa / F — primera cuerda, traste 1.\n' +
+          'Sol / G — primera cuerda, traste 3.\n\n' +
+          'Ahora puedes empezar a leer tus primeras notas en guitarra clásica.',
+        image: {
+          asset: 't5p2',
+          caption: 'Resumen visual: relacion entre pentagrama y mastil.',
+          attribution: 'Guitar Trainer',
+        },
       },
     ],
   },

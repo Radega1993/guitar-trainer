@@ -124,7 +124,11 @@ export default function PathModuleSectionView({
             >
               {mapWidth > 0 ? (
                 <View style={[styles.dotSlot, { left, top: DOT_TOP }]}>
-                  <PathLessonDot lesson={lesson} onPress={onLessonPress} />
+                  <PathLessonDot
+                    lesson={lesson}
+                    onPress={onLessonPress}
+                    preview={section.blockLocked && lesson.levelType === 'theory'}
+                  />
                 </View>
               ) : null}
             </View>

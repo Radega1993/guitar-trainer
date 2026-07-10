@@ -19,12 +19,14 @@ export function getScoringOptionsForStudyLevel(level?: StudyLevel): ScoringOptio
       : 'accuracy_and_speed';
 
   const passRules = level.stageConfig?.passRules ?? STAGE1_PASS_RULES;
+  const isFormativeQuiz = level.stageLevelType === 'quiz';
 
   return {
     mode,
     starThresholds: level.starThresholds ?? STAGE1_STAR_THRESHOLDS,
     passRules: {
-      maxErrorRate: passRules.maxErrorRate,
+      // Quizzes are formative: finishing unlocks the next lesson; stars still reflect accuracy.
+      maxErrorRate: isFormativeQuiz ? 1 : passRules.maxErrorRate,
       maxAvgResponseMs: passRules.maxAverageResponseTime * 1000,
     },
   };

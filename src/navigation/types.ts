@@ -25,7 +25,7 @@ export type RootStackParamList = {
   PracticeSetup: undefined;
   PracticeSession: { config: PracticeConfig };
   PracticeSummary: { summary: PracticeSummary };
-  TheoryLesson: { studyLevelId: string };
+  TheoryLesson: { studyLevelId: string; preview?: boolean };
   Quiz: { studyLevelId: string };
   Recognition: { studyLevelId: string };
 };

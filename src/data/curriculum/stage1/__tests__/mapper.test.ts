@@ -4,8 +4,8 @@ import { stage1ToStudyBlocks } from '../mapper';
 describe('stage1ToStudyBlocks', () => {
   const blocks = stage1ToStudyBlocks(stage1);
 
-  it('maps 10 blocks', () => {
-    expect(blocks).toHaveLength(10);
+  it('maps 9 blocks', () => {
+    expect(blocks).toHaveLength(9);
   });
 
   it('preserves all levels', () => {

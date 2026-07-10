@@ -8,7 +8,8 @@ export function theoryLevel(
   order: number,
   title: string,
   theoryId: string,
-  objective: string
+  objective: string,
+  prevId?: string
 ): StageLevel {
   return {
     id: `${blockId}-level${order}`,
@@ -17,6 +18,7 @@ export function theoryLevel(
     objective,
     theoryId,
     config: baseConfig({ numberOfQuestions: 0, sound: false }),
+    unlockAfterLevelId: prevId,
   };
 }
 

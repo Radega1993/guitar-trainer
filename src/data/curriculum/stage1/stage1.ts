@@ -1,5 +1,4 @@
 import { Stage } from '../types';
-import { block00Welcome } from './blocks/block00-welcome';
 import { block01String1 } from './blocks/block01-string1';
 import { block02String2 } from './blocks/block02-string2';
 import { block03Strings12 } from './blocks/block03-strings12';
@@ -16,7 +15,6 @@ export const stage1: Stage = {
   description: 'Aprende a leer y localizar todas las notas naturales en primera posición.',
   order: 1,
   blocks: [
-    block00Welcome,
     block01String1,
     block02String2,
     block03Strings12,

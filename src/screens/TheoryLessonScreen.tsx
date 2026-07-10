@@ -5,7 +5,7 @@ import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import LevelCompleteCelebration from '../components/celebration/LevelCompleteCelebration';
 import PrimaryButton from '../components/common/PrimaryButton';
 import TheoryIllustration from '../components/theory/TheoryIllustration';
-import { getStudyLevelById } from '../data/curriculum';
+import { getStudyLevelById, getStudyBlockById } from '../data/curriculum';
 import { getScoringOptionsForStudyLevel } from '../data/curriculum/scoringOptions';
 import { resolveNextLessonAfterCompleting } from '../data/curriculum/pathNavigation';
 import { getStage1TheoryById } from '../data/curriculum/stage1';
@@ -27,7 +27,7 @@ function PageDots({ total, current }: { total: number; current: number }) {
 }
 
 export default function TheoryLessonScreen({ route, navigation }: Props) {
-  const { studyLevelId } = route.params;
+  const { studyLevelId, preview = false } = route.params;
   const studyLevel = getStudyLevelById(studyLevelId);
   const theory = useMemo(
     () => (studyLevel?.stageTheoryId ? getStage1TheoryById(studyLevel.stageTheoryId) : undefined),
@@ -35,9 +35,13 @@ export default function TheoryLessonScreen({ route, navigation }: Props) {
   );
   const [pageIndex, setPageIndex] = useState(0);
   const [showCelebration, setShowCelebration] = useState(false);
-  const { recordStudyLevelResult, state } = useProgress();
-
   const [celebrationStars, setCelebrationStars] = useState(3);
+  const { recordStudyLevelResult, state, isStudyLevelUnlocked } = useProgress();
+
+  const block = useMemo(
+    () => (studyLevel ? getStudyBlockById(studyLevel.blockId) : undefined),
+    [studyLevel]
+  );
 
   const nextLesson = useMemo(
     () => (showCelebration ? resolveNextLessonAfterCompleting(studyLevelId, state) : null),
@@ -53,10 +57,24 @@ export default function TheoryLessonScreen({ route, navigation }: Props) {
     );
   }
 
+  if (!preview && !isStudyLevelUnlocked(studyLevelId)) {
+    return (
+      <SafeAreaView style={styles.safe}>
+        <Text style={styles.title}>Lección bloqueada</Text>
+        <Text style={styles.body}>Completa las lecciones anteriores para desbloquearla.</Text>
+        <PrimaryButton label="Volver" onPress={() => navigation.goBack()} />
+      </SafeAreaView>
+    );
+  }
+
   const page = theory.pages[pageIndex];
   const isLast = pageIndex >= theory.pages.length - 1;
 
   const finish = () => {
+    if (preview) {
+      navigation.goBack();
+      return;
+    }
     const result = summarizeRound(1, 1, 0, 0, getScoringOptionsForStudyLevel(studyLevel));
     recordStudyLevelResult(studyLevelId, { ...result, passed: true });
     setCelebrationStars(result.stars);
@@ -94,7 +112,13 @@ export default function TheoryLessonScreen({ route, navigation }: Props) {
 
       <ScrollView contentContainerStyle={styles.content}>
         <PageDots total={theory.pages.length} current={pageIndex} />
-        <Text style={styles.kicker}>{studyLevel.title}</Text>
+        {preview ? (
+          <View style={styles.previewBanner}>
+            <Text style={styles.previewBannerText}>Vista previa — no guarda progreso</Text>
+          </View>
+        ) : null}
+        <Text style={styles.kicker}>{block?.title ?? 'Teoría'}</Text>
+        <Text style={styles.lessonTitle}>{studyLevel.title}</Text>
 
         {page.image ? (
           <TheoryIllustration
@@ -123,7 +147,7 @@ export default function TheoryLessonScreen({ route, navigation }: Props) {
           />
         ) : null}
         <PrimaryButton
-          label={isLast ? 'Continuar' : 'Siguiente'}
+          label={isLast ? (preview ? 'Cerrar' : 'Continuar') : 'Siguiente'}
           onPress={() => (isLast ? finish() : setPageIndex((i) => i + 1))}
           style={styles.footerBtn}
         />
@@ -148,7 +172,20 @@ const styles = StyleSheet.create({
   },
   dotActive: { backgroundColor: colors.accent, width: 22 },
   dotIdle: { backgroundColor: colors.border },
+  previewBanner: {
+    backgroundColor: colors.surfaceAlt,
+    borderRadius: radius.md,
+    paddingHorizontal: spacing.sm,
+    paddingVertical: spacing.xs,
+  },
+  previewBannerText: {
+    color: colors.accent,
+    fontSize: 12,
+    fontWeight: '700',
+    textAlign: 'center',
+  },
   kicker: { color: colors.accent, fontSize: 13, fontWeight: '700' },
+  lessonTitle: { color: colors.textMuted, fontSize: 15, fontWeight: '600' },
   title: { color: colors.text, fontSize: 24, fontWeight: '800' },
   body: { color: colors.textMuted, fontSize: 16, lineHeight: 24 },
   sourceLink: { color: colors.accent, fontSize: 12, textDecorationLine: 'underline' },

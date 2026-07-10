@@ -6,13 +6,13 @@ import {
 
 describe('sessionService curriculum', () => {
   it('creates a study level session', () => {
-    const session = createStudyLevelSession('stage1-block1-level1');
+    const session = createStudyLevelSession('stage1-block1-level6');
     expect(session.questions.length).toBeGreaterThan(0);
-    expect(session.metadata?.studyLevelId).toBe('stage1-block1-level1');
+    expect(session.metadata?.studyLevelId).toBe('stage1-block1-level6');
   });
 
   it('creates a mini study session', () => {
-    const session = createMiniStudySession('mini:stage1-block1-level11');
+    const session = createMiniStudySession('mini:stage1-block1-level27');
     expect(session.questions.length).toBeGreaterThan(0);
     expect(session.metadata?.isMiniStudy).toBe(true);
   });
